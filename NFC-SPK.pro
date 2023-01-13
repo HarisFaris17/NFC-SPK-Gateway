@@ -8,15 +8,21 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Test-QThread
+TARGET = NFC-SPK
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    tcpserver.cpp
+    tcpserver.cpp \
+    tcp.cpp \
+    tcpserver2.cpp \
+    processor.cpp
 
 HEADERS  += mainwindow.h \
-    tcpserver.h
+    tcpserver.h \
+    tcp.h \
+    tcpserver2.h \
+    processor.h
 
 FORMS    += mainwindow.ui
