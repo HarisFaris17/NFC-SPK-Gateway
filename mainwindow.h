@@ -12,6 +12,8 @@
 #include <QVariantMap>
 #include <QJsonObject>
 #include <QByteArray>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 
 namespace Ui {
 class MainWindow;
@@ -28,7 +30,8 @@ public Q_SLOTS:
 
     void timerTimeout();
 
-    void receiveData(QByteArray data);
+    void receiveDataConsole(QByteArray data);
+    void receiveDataTable(QString deviceId, QString tagId, QString spk, QString counter, QString dateTime);
 
 
 
@@ -47,6 +50,8 @@ private:
     QLineEdit *portLineEdit;
     QPushButton *connectPushButton;
     QTextBrowser *console;
+    QTableWidget *tableWidget;
+    QTableWidgetItem *protoTableWidgetItem;
 //    QPushButton *unlistenPushButton;
 //    QTextBrowser *serialConsole;
 
@@ -58,6 +63,14 @@ private:
         STOP,
         LISTENING
     }StateTcp;
+
+    typedef enum{
+        DEVICE_ID = 0,
+        TAG_ID,
+        SPK,
+        COUNTER,
+        LAST_UPDATE
+    }ColumnNumber;
 
     StateTcp stateTcp = STOP;
 //    TCPServer tcpServer;

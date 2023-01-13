@@ -11,13 +11,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ipAddressLineEdit = ui ->ipAddressLineEdit;
     portLineEdit = ui->portLineEdit;
     console = ui->console;
+    tableWidget = ui->tableWidget;
 
     timer = new QTimer();
     timer->setSingleShot(true);
 
     processor = new Processor;
     QThread *processorThread = new QThread;
-    connect(processor, &Processor::sendData, this, &MainWindow::receiveData);
+    connect(processor, &Processor::sendData, this, &MainWindow::receiveDataConsole);
+    connect(processor, &Processor::sendDataTable, this, &MainWindow::receiveDataTable);
     connect(this, &MainWindow::destroyed, processorThread, &QThread::quit);
     connect(processorThread, &QThread::started, processor, &Processor::started);
     connect(processorThread, &QThread::finished, processor, &Processor::deleteLater);
@@ -32,6 +34,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(timer, &QTimer::timeout, this, &MainWindow::timerTimeout);
 
+    protoTableWidgetItem = new QTableWidgetItem();
+    protoTableWidgetItem->setFlags(protoTableWidgetItem->flags() & ~Qt::ItemIsEditable);
+    protoTableWidgetItem->setTextAlignment(Qt::AlignCenter);
 }
 
 void MainWindow::connectDisconnectTCP(){
@@ -151,7 +156,7 @@ void MainWindow::timerTimeout(){
     }
 }
 
-void MainWindow::receiveData(QByteArray data){
+void MainWindow::receiveDataConsole(QByteArray data){
     qDebug()<<data;
 
     QByteArray slicedData;
@@ -160,6 +165,28 @@ void MainWindow::receiveData(QByteArray data){
     }
     qDebug()<<QString::fromUtf8(slicedData);
     console->append(QString::fromUtf8(slicedData));
+}
+
+void MainWindow::receiveDataTable(QString deviceId, QString tagId, QString spk, QString counter, QString dateTime){
+    qDebug()<<__func__;
+    qDebug()<<deviceId<<tagId<<spk<<counter,dateTime;
+    QTableWidgetItem *deviceIdItem = protoTableWidgetItem->clone();
+    QTableWidgetItem *tagIdItem = protoTableWidgetItem->clone();
+    QTableWidgetItem *spkItem = protoTableWidgetItem->clone();
+    QTableWidgetItem *counterItem = protoTableWidgetItem->clone();
+    QTableWidgetItem *dateTimeItem = protoTableWidgetItem->clone();
+
+    deviceIdItem->setText(deviceId);
+    tagIdItem->setText(tagId);
+    spkItem->setText(spk);
+    counterItem->setText(counter);
+    dateTimeItem->setText(dateTime);
+
+    tableWidget->setItem(0, DEVICE_ID, deviceIdItem);
+    tableWidget->setItem(0, TAG_ID, tagIdItem);
+    tableWidget->setItem(0, SPK, spkItem);
+    tableWidget->setItem(0, COUNTER, counterItem);
+    tableWidget->setItem(0, LAST_UPDATE, dateTimeItem);
 }
 
 void MainWindow::changeDisplayStateTCP(){

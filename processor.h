@@ -19,12 +19,14 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void sendData(QByteArray data);
+    void sendDataTable(QString deviceId, QString tagId, QString spk, QString counter, QString dateTime);
 public:
     Processor();
     ~Processor();
 
 private:
     bool convertToBytes(QString stringedBytes, QByteArray *p_result);
+    bool parseData(QByteArray data, int index, QString *p_result);
 };
 
 #endif // PROCESSOR_H

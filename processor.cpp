@@ -42,10 +42,32 @@ void Processor::receiveTcpData(QByteArray data){
             continue;
         }
 
-        data += tr("#") + wantedMac;
+        QString currentTimeString = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
 
-        data += tr("#") + QDateTime::currentDateTime().toString("ddMMyyyyHHmmss");
+        data += tr("#") + wantedMac;
+        data += tr("#") + currentTimeString;
+
         Q_EMIT sendData(data);
+
+        QString spk;
+        QString counter;
+        QString tagId;
+
+        qDebug()<<"Parsing...";
+        if (!parseData(data, 1, &spk)) {
+            qDebug()<<"parsing first data failed";
+            return;
+        }
+
+        if (!parseData(data, 2, &counter)){
+            qDebug()<<"parsing first data failed";
+            return;
+        }\
+        if (!parseData(data, 3, &tagId)) {
+            qDebug()<<"parsing first data failed";
+            return;
+        }
+        Q_EMIT sendDataTable(mac, tagId, spk, counter, currentTimeString);
     }
 }
 
@@ -101,6 +123,33 @@ bool Processor::convertToBytes(QString stringedBytes, QByteArray *p_result){
     if (slashCounter < 3) return false;
     qDebug()<<bytes;
     return true;
+}
+
+bool Processor::parseData(QByteArray data, int dataRegionNumber, QString *p_result){
+    qDebug()<<__func__<<data;
+    uint8_t slashCounter = 0;
+    int i = 0;
+    for ( ; i < data.length(); i++){
+        qDebug()<<i;
+        if (data[i] == '#'){
+            slashCounter++;
+            qDebug()<<"slash : "<<slashCounter;
+            if (slashCounter == dataRegionNumber) break;
+        }
+    }
+    qDebug()<<slashCounter<<";";
+    if (slashCounter != dataRegionNumber) return false;
+
+    //  the last value of i must be at last index of data or at first index of string of dataRegionNumber
+    int j = 0;
+    for (i++; i < data.length(); i++){
+        if (data[i] == '#') break;
+        (*p_result)[j] = data[i];
+        j++;
+    }
+
+    return true;
+
 }
 
 Processor::~Processor(){
