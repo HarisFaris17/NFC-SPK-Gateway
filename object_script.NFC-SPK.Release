@@ -1,0 +1,15 @@
+INPUT(
+./release\main.o
+./release\mainwindow.o
+./release\tcpserver.o
+./release\tcp.o
+./release\tcpserver2.o
+./release\processor.o
+./release\database.o
+./release\moc_mainwindow.o
+./release\moc_tcpserver.o
+./release\moc_tcp.o
+./release\moc_tcpserver2.o
+./release\moc_processor.o
+./release\moc_database.o
+);

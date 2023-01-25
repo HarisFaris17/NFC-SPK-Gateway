@@ -3,6 +3,7 @@
 
 #include "tcpserver2.h"
 #include "processor.h"
+#include "database.h"
 #include <QMainWindow>
 #include <QPushButton>
 #include <QLineEdit>
@@ -28,10 +29,16 @@ public Q_SLOTS:
     void unlistenedTcp();
 //    void receiveData(QJsonObject data);
 
-    void timerTimeout();
+    void timerTcpTimeout();
+    void timerDatabaseTimeout();
 
     void receiveDataConsole(QByteArray data);
     void receiveDataTable(QString deviceId, QString tagId, QString spk, QString counter, QString dateTime);
+
+    void connectDisconnectDatabase();
+    void databaseConnectionResult(bool isSuccess);
+    void databaseDisconnected();
+
 
 
 
@@ -39,6 +46,10 @@ Q_SIGNALS:
     void listen(const QString &ipAddress,const QString &port);
     void test();
     void unlistenTCP();
+    void deleteTimerTCP();
+
+    void disconnectDatabase();
+    void deleteTimerDatabase();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -46,23 +57,37 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    QLineEdit *ipAddressLineEdit;
-    QLineEdit *portLineEdit;
-    QPushButton *connectPushButton;
+    QLineEdit *ipAddressTCPLineEdit;
+    QLineEdit *portTCPLineEdit;
+    QLineEdit *hostDatabaseLineEdit;
+    QLineEdit *portDatabaseLineEdit;
+    QLineEdit *databaseNameDatabaseLineEdit;
+    QLineEdit *usernameDatabaseLineEdit;
+    QLineEdit *passwordDatabaseLineEdit;
+    QPushButton *connectTCPPushButton;
+    QPushButton *connectDatabasePushButton;
     QTextBrowser *console;
     QTableWidget *tableWidget;
     QTableWidgetItem *protoTableWidgetItem;
+
 //    QPushButton *unlistenPushButton;
 //    QTextBrowser *serialConsole;
 
-    QTimer *timer = NULL;
+//    QTimer *timerTcp = NULL;
     Processor *processor = NULL;
+    Database *database = NULL;
 
     typedef enum{
-        WAITING,
-        STOP,
-        LISTENING
+        WaitingTCP,
+        TCPStop,
+        TCPListening
     }StateTcp;
+
+    typedef enum{
+        WaitingDatabase,
+        DatabaseDisconnected,
+        DatabaseConnected
+    }StateDatabase;
 
     typedef enum{
         DEVICE_ID = 0,
@@ -72,12 +97,15 @@ private:
         LAST_UPDATE
     }ColumnNumber;
 
-    StateTcp stateTcp = STOP;
+    StateTcp stateTcp = TCPStop;
+    StateDatabase stateDatabase = DatabaseDisconnected;
+
 //    TCPServer tcpServer;
 //    TCPServer *tcpServer = NULL;
 //    QThread *thread1;
 private:
     void changeDisplayStateTCP();
+    void changeDisplayDatabase();
 };
 
 #endif // MAINWINDOW_H

@@ -5,9 +5,9 @@ Processor::Processor()
 
 }
 
-void Processor::receiveTcpData(QByteArray data){
+void Processor::receiveTcpData(QByteArray rawData){
     qDebug()<<"Received TCP Data in file processor";
-    QJsonDocument dataJson = QJsonDocument::fromJson(data);
+    QJsonDocument dataJson = QJsonDocument::fromJson(rawData);
     if (dataJson.isEmpty()){
         qDebug()<<"Error while parsing JSON or JSON data is empty";
         qDebug()<<dataJson;
@@ -16,6 +16,7 @@ void Processor::receiveTcpData(QByteArray data){
     QJsonArray dataJsonArray = dataJson.array();
     qDebug()<<dataJsonArray;
     QString wantedMac = tr("DCC7CD766E3A");
+    QString wantedMac2 = tr("E985AED59234");
     for (auto dataIterator = dataJsonArray.begin(); dataIterator != dataJsonArray.end(); ++dataIterator){
         QJsonValue dataElement = *dataIterator;
 
@@ -26,7 +27,7 @@ void Processor::receiveTcpData(QByteArray data){
 
         QJsonObject dataElementObject = dataElement.toObject();
         QString mac = dataElementObject.value("mac").toString();
-        if (mac != wantedMac) {
+        if (mac != wantedMac && mac != wantedMac2) {
             qDebug()<<"Not wanted MAC";
             continue;
         }
@@ -41,33 +42,52 @@ void Processor::receiveTcpData(QByteArray data){
             // here we continue the loops since maybe there are some other MAC address we want to inspect the data
             continue;
         }
+        QByteArray extractedData;
+
+        if (!extractData(data, &extractedData)){
+            qDebug()<<"Failed to extract data";
+            return;
+        }
 
         QString currentTimeString = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
 
-        data += tr("#") + wantedMac;
-        data += tr("#") + currentTimeString;
+        extractedData += tr("#") + wantedMac;
+        extractedData += tr("#") + currentTimeString;
 
-        Q_EMIT sendData(data);
 
+        Q_EMIT sendData(extractedData);
+
+        QString cmd;
         QString spk;
         QString counter;
         QString tagId;
 
+
         qDebug()<<"Parsing...";
-        if (!parseData(data, 1, &spk)) {
+        if (!parseData(extractedData, 0, &cmd)) {
             qDebug()<<"parsing first data failed";
             return;
         }
 
-        if (!parseData(data, 2, &counter)){
-            qDebug()<<"parsing first data failed";
-            return;
-        }\
-        if (!parseData(data, 3, &tagId)) {
+        if (!parseData(extractedData, 1, &spk)) {
             qDebug()<<"parsing first data failed";
             return;
         }
-        Q_EMIT sendDataTable(mac, tagId, spk, counter, currentTimeString);
+
+        if (!parseData(extractedData, 2, &counter)){
+            qDebug()<<"parsing first data failed";
+            return;
+        }\
+        if (!parseData(extractedData, 3, &tagId)) {
+            qDebug()<<"parsing first data failed";
+            return;
+        }
+
+        qDebug()<<"The cmd \n\n\n"<<cmd;
+        qDebug()<<spk;
+        qDebug()<<counter;
+        if (cmd == "DAT") Q_EMIT sendDataTable(mac, tagId, spk, counter, currentTimeString);
+        else if (cmd == "DON") Q_EMIT sendDataTable(mac, "", spk, counter, currentTimeString);
     }
 }
 
@@ -129,27 +149,63 @@ bool Processor::parseData(QByteArray data, int dataRegionNumber, QString *p_resu
     qDebug()<<__func__<<data;
     uint8_t slashCounter = 0;
     int i = 0;
-    for ( ; i < data.length(); i++){
-        qDebug()<<i;
-        if (data[i] == '#'){
-            slashCounter++;
-            qDebug()<<"slash : "<<slashCounter;
-            if (slashCounter == dataRegionNumber) break;
-        }
-    }
-    qDebug()<<slashCounter<<";";
-    if (slashCounter != dataRegionNumber) return false;
 
-    //  the last value of i must be at last index of data or at first index of string of dataRegionNumber
+//    if (dataRegionNumber != 0){
+//        for ( ; i < data.length(); i++){
+//            qDebug()<<i;
+//            if (data[i] == '#'){
+//                slashCounter++;
+//                qDebug()<<"slash : "<<slashCounter;
+//                if (slashCounter == dataRegionNumber) break;
+//            }
+//        }
+//        qDebug()<<slashCounter<<";";
+
+//    }
+
+//    //  the last value of i must be at last index of data or at first index of string of dataRegionNumber
+//    int j = 0;
+//    for (i++; i < data.length(); i++){
+//        if (data[i] == '#') break;
+//        (*p_result)[j] = data[i];
+//        j++;
+//    }
     int j = 0;
-    for (i++; i < data.length(); i++){
-        if (data[i] == '#') break;
-        (*p_result)[j] = data[i];
-        j++;
+    for (; i < data.length(); i++){
+        if (dataRegionNumber == slashCounter){
+            if (data[i] == '#') break;
+            (*p_result)[j] = data[i];
+            j++;
+        }
+        if (data[i] == '#') slashCounter++;
     }
+    if (slashCounter != dataRegionNumber) return false;
 
     return true;
 
+}
+
+bool Processor::extractData(QByteArray rawData, QByteArray *p_result){
+    // first data cukup is just for flags
+//    int index_value;
+//    uint8_t flags_length = rawData[0];
+//    index_value = 0 + flags_length;
+
+//    uint8_t manuf_data_length = rawData[index_value+1];
+//    index_value += 3;
+//    \
+//    // +2 since there is manufactur id before actual manufacture data
+//    int j = 0;
+//    for (int i = index_value+2; i < rawData.length(); i++){
+//        p_result[j] = rawData[i];
+//        j++;
+//    }
+    int j = 0;
+    for (int i = 7; i < rawData.length(); i++){
+        (*p_result)[j] = rawData[i];
+        j++;
+    }
+    return true;
 }
 
 Processor::~Processor(){

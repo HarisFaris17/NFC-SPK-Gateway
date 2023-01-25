@@ -14,7 +14,7 @@ class Processor : public QObject
 {
     Q_OBJECT
 public Q_SLOTS:
-    void receiveTcpData(QByteArray data);
+    void receiveTcpData(QByteArray rawData);
     void started();
 
 Q_SIGNALS:
@@ -27,6 +27,7 @@ public:
 private:
     bool convertToBytes(QString stringedBytes, QByteArray *p_result);
     bool parseData(QByteArray data, int index, QString *p_result);
+    bool extractData(QByteArray rawData, QByteArray *p_result);
 };
 
 #endif // PROCESSOR_H

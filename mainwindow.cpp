@@ -6,15 +6,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    connectPushButton = ui->connectPushButton;
+    connectTCPPushButton = ui->connectTCPPushButton;
+    connectDatabasePushButton = ui->connectDatabasePushButton;
 //    unlistenPushButton = ui->unlistenPushButton;
-    ipAddressLineEdit = ui ->ipAddressLineEdit;
-    portLineEdit = ui->portLineEdit;
+    ipAddressTCPLineEdit = ui ->ipAddressTCPLineEdit;
+    portTCPLineEdit = ui->portTCPLineEdit;
+    hostDatabaseLineEdit = ui->hostDatabaseLineEdit;
+    portDatabaseLineEdit = ui->portDatabaseLineEdit;
+    databaseNameDatabaseLineEdit = ui->databaseNameDatabaseLineEdit;
+    usernameDatabaseLineEdit = ui->usernameDatabaseLineEdit;
+    passwordDatabaseLineEdit = ui->passwordDatabaseLineEdit;
     console = ui->console;
     tableWidget = ui->tableWidget;
 
-    timer = new QTimer();
-    timer->setSingleShot(true);
+
 
     processor = new Processor;
     QThread *processorThread = new QThread;
@@ -29,10 +34,10 @@ MainWindow::MainWindow(QWidget *parent) :
     processorThread->start(QThread::HighPriority);
 
     qDebug()<<"mainwindow thread : "<<QThread::currentThread();
-    connect(connectPushButton,&QPushButton::clicked,this,&MainWindow::connectDisconnectTCP);
-//    connect(unlistenPushButton,&QPushButton::clicked,this,&MainWindow::unlisten);
+    connect(connectTCPPushButton,&QPushButton::clicked,this,&MainWindow::connectDisconnectTCP);
 
-    connect(timer, &QTimer::timeout, this, &MainWindow::timerTimeout);
+    connect(connectDatabasePushButton, &QPushButton::clicked, this, &MainWindow::connectDisconnectDatabase);
+//    connect(unlistenPushButton,&QPushButton::clicked,this,&MainWindow::unlisten);
 
     protoTableWidgetItem = new QTableWidgetItem();
     protoTableWidgetItem->setFlags(protoTableWidgetItem->flags() & ~Qt::ItemIsEditable);
@@ -69,23 +74,23 @@ void MainWindow::connectDisconnectTCP(){
 //    tcpServer->moveToThread(thread1);
 
 //    thread1->start();
-    if (stateTcp == WAITING) {
+    if (stateTcp == WaitingTCP) {
         qDebug()<<"The TCP is currently waiting to wake up";
         return;
     }
 
-    else if (stateTcp == LISTENING) {
+    else if (stateTcp == TCPListening) {
         qDebug()<<"Disconnecting TCP";
         Q_EMIT unlistenTCP();
-        stateTcp = STOP;
+        stateTcp = TCPStop;
         changeDisplayStateTCP();
     }
 
-    else if (stateTcp == STOP) {
+    else if (stateTcp == TCPStop) {
         qDebug()<<"Trying to listen";
 
-        QString ipAddress = ipAddressLineEdit->text();
-        QString port = portLineEdit->text();
+        QString ipAddress = ipAddressTCPLineEdit->text();
+        QString port = portTCPLineEdit->text();
         int portNumber = port.toInt();
 
         TcpServer2 *tcpServer =  new TcpServer2();
@@ -105,13 +110,18 @@ void MainWindow::connectDisconnectTCP(){
         connect(tcpServer, &TcpServer2::sendData, processor, &Processor::receiveTcpData);
         connect(this, &MainWindow::test, tcpServer, &TcpServer2::test);
 
+        QTimer *timerTcp = new QTimer(this);
+
+        connect(timerTcp, &QTimer::timeout, this, &MainWindow::timerTcpTimeout);
+        connect(this, &MainWindow::deleteTimerTCP, timerTcp, &QTimer::deleteLater);
+
+        timerTcp->setSingleShot(true);
+        timerTcp->start(10000);
+
         tcpServer->moveToThread(tcpServerThread);
         tcpServerThread->start();
 
-    //    connect(timer, &QTimer::timeout, )
-
-        timer->start(10000);
-        stateTcp = WAITING;
+        stateTcp = WaitingTCP;
         changeDisplayStateTCP();
         Q_EMIT test();
 //        tcpServer->unlisten();
@@ -120,18 +130,18 @@ void MainWindow::connectDisconnectTCP(){
 
 void MainWindow::listenResult(bool isSuccess){
     qDebug()<< "Listening result " << isSuccess;
-    if (isSuccess) stateTcp = LISTENING;
-    else stateTcp = STOP;
+    if (isSuccess) stateTcp = TCPListening;
+    else stateTcp = TCPStop;
     changeDisplayStateTCP();
-    timer->stop();
-//    if (!isSuccess) delete tcpServer;
+
+    Q_EMIT deleteTimerTCP();
 }
 
 void MainWindow::unlistenedTcp(){
     // this conditional is not required, but just to prevent if there are some code that will break the flows of display TCP
     qDebug()<<"this is called";
-    if (stateTcp == LISTENING){
-        stateTcp = STOP;
+    if (stateTcp == TCPListening){
+        stateTcp = TCPStop;
         changeDisplayStateTCP();
     }
 }
@@ -148,23 +158,31 @@ void MainWindow::unlistenedTcp(){
 //    Q_EMIT unlistenTCP();
 //}
 
-void MainWindow::timerTimeout(){
-    if (stateTcp == WAITING) {
+void MainWindow::timerTcpTimeout(){
+    if (stateTcp == WaitingTCP) {
         qDebug()<<"TCP Server failed to start";
-        stateTcp = STOP;
+        stateTcp = TCPStop;
         changeDisplayStateTCP();
     }
+
+    Q_EMIT deleteTimerTCP();
+}
+
+void MainWindow::timerDatabaseTimeout(){
+    if (stateDatabase == WaitingDatabase){
+        qDebug()<<"Failed to get connection to database";
+        stateDatabase = DatabaseDisconnected;
+        changeDisplayDatabase();
+    }
+
+    Q_EMIT deleteTimerDatabase();
 }
 
 void MainWindow::receiveDataConsole(QByteArray data){
     qDebug()<<data;
 
-    QByteArray slicedData;
-    for (int i = 7; i < data.length(); i++){
-        slicedData += data[i];
-    }
-    qDebug()<<QString::fromUtf8(slicedData);
-    console->append(QString::fromUtf8(slicedData));
+    qDebug()<<QString::fromUtf8(data);
+    console->append(QString::fromUtf8(data));
 }
 
 void MainWindow::receiveDataTable(QString deviceId, QString tagId, QString spk, QString counter, QString dateTime){
@@ -177,43 +195,151 @@ void MainWindow::receiveDataTable(QString deviceId, QString tagId, QString spk, 
     QTableWidgetItem *dateTimeItem = protoTableWidgetItem->clone();
 
     deviceIdItem->setText(deviceId);
-    tagIdItem->setText(tagId);
+
+    if (tagId != "") tagIdItem->setText(tagId);
+    else tagIdItem->setText("---");
+
     spkItem->setText(spk);
     counterItem->setText(counter);
     dateTimeItem->setText(dateTime);
 
-    tableWidget->setItem(0, DEVICE_ID, deviceIdItem);
-    tableWidget->setItem(0, TAG_ID, tagIdItem);
-    tableWidget->setItem(0, SPK, spkItem);
-    tableWidget->setItem(0, COUNTER, counterItem);
-    tableWidget->setItem(0, LAST_UPDATE, dateTimeItem);
+    if (deviceId == "DCC7CD766E3A"){
+        tableWidget->setItem(0, DEVICE_ID, deviceIdItem);
+        tableWidget->setItem(0, TAG_ID, tagIdItem);
+        tableWidget->setItem(0, SPK, spkItem);
+        tableWidget->setItem(0, COUNTER, counterItem);
+        tableWidget->setItem(0, LAST_UPDATE, dateTimeItem);
+    }
+    else if (deviceId == "E985AED59234"){
+        tableWidget->setItem(1, DEVICE_ID, deviceIdItem);
+        tableWidget->setItem(1, TAG_ID, tagIdItem);
+        tableWidget->setItem(1, SPK, spkItem);
+        tableWidget->setItem(1, COUNTER, counterItem);
+        tableWidget->setItem(1, LAST_UPDATE, dateTimeItem);
+    }
+}
+
+void MainWindow::connectDisconnectDatabase(){
+    qDebug()<<"connect disconnect database";
+
+    if (stateDatabase == DatabaseDisconnected){
+        qDebug()<<"Connecting database...";
+
+        QString hostDatabase = hostDatabaseLineEdit->text();
+        QString port = portDatabaseLineEdit->text();
+        QString databaseName = databaseNameDatabaseLineEdit->text();
+        QString username = usernameDatabaseLineEdit->text();
+        QString password = passwordDatabaseLineEdit->text();
+        database = new Database;
+        QThread *databaseThread = new QThread;
+
+        database->config(hostDatabase, port, databaseName, username, password);
+
+        connect(this, &MainWindow::destroyed, databaseThread, &QThread::quit);
+        connect(this, &MainWindow::disconnectDatabase, database, &Database::disconnectDatabase);
+        connect(database, &Database::databaseDisconnected, this, &MainWindow::databaseDisconnected);
+        connect(database, &Database::databaseDisconnected, databaseThread, &QThread::quit);
+        connect(database, &Database::databaseConnectionResult, this, &MainWindow::databaseConnectionResult);
+        connect(databaseThread, &QThread::started, database, &Database::run);
+        connect(databaseThread, &QThread::finished, database, &Database::deleteLater);
+        connect(databaseThread, &QThread::finished, databaseThread, &QThread::deleteLater);
+
+        QTimer *timerDatabase = new QTimer(this);
+        connect(timerDatabase, &QTimer::timeout, this, &MainWindow::timerDatabaseTimeout);
+        connect(this, &MainWindow::deleteTimerDatabase, timerDatabase, &QTimer::deleteLater);
+
+        timerDatabase->setSingleShot(true);
+        timerDatabase->start(10000);
+
+        database->moveToThread(databaseThread);
+        databaseThread->start(QThread::HighPriority);
+
+        stateDatabase = WaitingDatabase;
+
+    }
+    else if (stateDatabase == WaitingDatabase){
+        qDebug()<<"Waiting connection ";
+    }
+    else if (stateDatabase == DatabaseConnected)
+    {
+        qDebug()<<"Disconnecting database...";
+        Q_EMIT disconnectDatabase();
+        stateDatabase = DatabaseDisconnected;
+        changeDisplayDatabase();
+    }
+}
+
+void MainWindow::databaseConnectionResult(bool isSuccess){
+    qDebug()<<"Database connection result";
+    if (isSuccess) stateDatabase = DatabaseConnected;
+    else stateDatabase = DatabaseDisconnected;
+    changeDisplayDatabase();
+
+    Q_EMIT deleteTimerDatabase();
+}
+
+void MainWindow::databaseDisconnected(){
+    if (stateDatabase == DatabaseConnected) {
+        stateDatabase = DatabaseDisconnected;
+        qDebug()<<"Database disconnected";
+    }
 }
 
 void MainWindow::changeDisplayStateTCP(){
-    if (stateTcp == WAITING){
-        connectPushButton->setEnabled(false);
-        ipAddressLineEdit->setEnabled(false);
-        portLineEdit->setEnabled(false);
+    if (stateTcp == WaitingTCP){
+        connectTCPPushButton->setEnabled(false);
+        ipAddressTCPLineEdit->setEnabled(false);
+        portTCPLineEdit->setEnabled(false);
     }
-    else if (stateTcp == LISTENING){
-        connectPushButton->setEnabled(true);
-        connectPushButton->setText("Stop");
-        ipAddressLineEdit->setEnabled(false);
-        portLineEdit->setEnabled(false);
+    else if (stateTcp == TCPListening){
+        connectTCPPushButton->setEnabled(true);
+        connectTCPPushButton->setText("Stop");
+        ipAddressTCPLineEdit->setEnabled(false);
+        portTCPLineEdit->setEnabled(false);
     }
-    else if (stateTcp == STOP){
-        connectPushButton->setEnabled(true);
-        connectPushButton->setText("Connect");
-        ipAddressLineEdit->setEnabled(true);
-        portLineEdit->setEnabled(true);
+    else if (stateTcp == TCPStop){
+        connectTCPPushButton->setEnabled(true);
+        connectTCPPushButton->setText("Connect");
+        ipAddressTCPLineEdit->setEnabled(true);
+        portTCPLineEdit->setEnabled(true);
+    }
+}
+
+void MainWindow::changeDisplayDatabase(){
+    if (stateDatabase == DatabaseConnected){
+        connectDatabasePushButton->setText("Disconnect");
+        connectDatabasePushButton->setEnabled(true);
+        hostDatabaseLineEdit->setEnabled(false);
+        portDatabaseLineEdit->setEnabled(false);
+        databaseNameDatabaseLineEdit->setEnabled(false);
+        usernameDatabaseLineEdit->setEnabled(false);
+        passwordDatabaseLineEdit->setEnabled(false);
+    }
+    else if (stateDatabase == WaitingDatabase){
+        connectDatabasePushButton->setEnabled(false);
+        hostDatabaseLineEdit->setEnabled(false);
+        portDatabaseLineEdit->setEnabled(false);
+        databaseNameDatabaseLineEdit->setEnabled(false);
+        usernameDatabaseLineEdit->setEnabled(false);
+        passwordDatabaseLineEdit->setEnabled(false);
+    }
+    else if (stateDatabase == DatabaseDisconnected){
+        connectDatabasePushButton->setText("Connect");
+        connectDatabasePushButton->setEnabled(true);
+        hostDatabaseLineEdit->setEnabled(true);
+        portDatabaseLineEdit->setEnabled(true);
+        databaseNameDatabaseLineEdit->setEnabled(true);
+        usernameDatabaseLineEdit->setEnabled(true);
+        passwordDatabaseLineEdit->setEnabled(true);
     }
 }
 
 MainWindow::~MainWindow()
 {
 //    delete tcpServer;
-    timer->stop();
-    delete timer;
+//    timer->stop();
+//    delete timer;
     delete processor;
+    delete database;
     delete ui;
 }
