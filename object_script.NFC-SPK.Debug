@@ -6,6 +6,7 @@ INPUT(
 ./debug\tcpserver2.o
 ./debug\processor.o
 ./debug\database.o
+./debug\file.o
 ./debug\moc_mainwindow.o
 ./debug\moc_tcpserver.o
 ./debug\moc_tcp.o

@@ -42,6 +42,29 @@ MainWindow::MainWindow(QWidget *parent) :
     protoTableWidgetItem = new QTableWidgetItem();
     protoTableWidgetItem->setFlags(protoTableWidgetItem->flags() & ~Qt::ItemIsEditable);
     protoTableWidgetItem->setTextAlignment(Qt::AlignCenter);
+
+    QString ipAddress;
+    QString TCPPort;
+    QString host;
+    QString databasePort;
+    QString databaseName;
+    QString username;
+    QString password;
+
+    File file;
+    file.parseFile(ipAddress, TCPPort, host, databasePort, databaseName, username, password);
+    qDebug()<<ipAddress<< TCPPort<< host<< databasePort<< databaseName<< username<< password;
+
+    ipAddressTCPLineEdit->setText(ipAddress);
+    portTCPLineEdit->setText(TCPPort);
+    hostDatabaseLineEdit->setText(host);
+    portDatabaseLineEdit->setText(databasePort);
+    databaseNameDatabaseLineEdit->setText(databaseName);
+    usernameDatabaseLineEdit->setText(username);
+    passwordDatabaseLineEdit->setText(password);
+
+    connectDisconnectTCP();
+    connectDisconnectDatabase();
 }
 
 void MainWindow::connectDisconnectTCP(){

@@ -6,6 +6,7 @@ INPUT(
 ./release\tcpserver2.o
 ./release\processor.o
 ./release\database.o
+./release\file.o
 ./release\moc_mainwindow.o
 ./release\moc_tcpserver.o
 ./release\moc_tcp.o

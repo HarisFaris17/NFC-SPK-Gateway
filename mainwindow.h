@@ -3,6 +3,7 @@
 
 #include "tcpserver2.h"
 #include "processor.h"
+#include "file.h"
 #include "database.h"
 #include <QMainWindow>
 #include <QPushButton>

@@ -49,7 +49,8 @@ SOURCES       = main.cpp \
 		tcp.cpp \
 		tcpserver2.cpp \
 		processor.cpp \
-		database.cpp release\moc_mainwindow.cpp \
+		database.cpp \
+		file.cpp release\moc_mainwindow.cpp \
 		release\moc_tcpserver.cpp \
 		release\moc_tcp.cpp \
 		release\moc_tcpserver2.cpp \
@@ -62,6 +63,7 @@ OBJECTS       = release/main.o \
 		release/tcpserver2.o \
 		release/processor.o \
 		release/database.o \
+		release/file.o \
 		release/moc_mainwindow.o \
 		release/moc_tcpserver.o \
 		release/moc_tcp.o \
@@ -74,13 +76,15 @@ DIST          =  mainwindow.h \
 		tcp.h \
 		tcpserver2.h \
 		processor.h \
-		database.h main.cpp \
+		database.h \
+		file.h main.cpp \
 		mainwindow.cpp \
 		tcpserver.cpp \
 		tcp.cpp \
 		tcpserver2.cpp \
 		processor.cpp \
-		database.cpp
+		database.cpp \
+		file.cpp
 QMAKE_TARGET  = NFC-SPK
 DESTDIR        = release\ #avoid trailing-slash linebreak
 TARGET         = NFC-SPK.exe
@@ -100,10 +104,10 @@ qmake: FORCE
 qmake_all: FORCE
 
 dist:
-	$(ZIP) NFC-SPK.zip $(SOURCES) $(DIST) NFC-SPK.pro ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\spec_pre.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\qdevice.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\device_config.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\common\angle.conf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\qconfig.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dcore.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dcore_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dinput.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dinput_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dlogic.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dlogic_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquick.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquick_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquickinput.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquickinput_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquickrender.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquickrender_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3drender.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3drender_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axbase.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axbase_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axcontainer.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axcontainer_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axserver.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axserver_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_bluetooth.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_bluetooth_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_bootstrap_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_clucene_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_concurrent.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_concurrent_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_core.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_core_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_dbus.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_dbus_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_designer.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_designer_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_designercomponents_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_gui.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_gui_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_help.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_help_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_labscontrols_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_labstemplates_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_location.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_location_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_multimedia.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_multimedia_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_multimediawidgets.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_multimediawidgets_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_network.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_network_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_nfc.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_nfc_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_opengl.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_opengl_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_openglextensions.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_openglextensions_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_platformsupport_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_positioning.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_positioning_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_printsupport.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_printsupport_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qml.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qml_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qmldevtools_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qmltest.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qmltest_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_quick.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_quick_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_quickparticles_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_quickwidgets.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_quickwidgets_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_script.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_script_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_scripttools.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_scripttools_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_sensors.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_sensors_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_serialbus.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_serialbus_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_serialport.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_serialport_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_sql.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_sql_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_svg.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_svg_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_testlib.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_testlib_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_uiplugin.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_uitools.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_uitools_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_webchannel.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_webchannel_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_websockets.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_websockets_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_widgets.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_widgets_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_winextras.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_winextras_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_xml.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_xml_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_xmlpatterns.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_xmlpatterns_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\qt_functions.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\qt_config.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\win32\qt_config.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\win32-g++\qmake.conf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\spec_post.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\exclusive_builds.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\default_pre.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\win32\default_pre.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\resolve_config.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\exclusive_builds_post.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\default_post.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\build_pass.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\qml_debug.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\win32\rtti.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\precompile_header.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\warn_on.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\qt.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\resources.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\moc.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\win32\opengl.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\uic.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\file_copies.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\win32\windows.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\testcase_targets.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\exceptions.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\yacc.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\lex.prf NFC-SPK.pro ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\qtmain.prl ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\Qt5Widgets.prl ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\Qt5Gui.prl ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\Qt5Network.prl ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\Qt5Sql.prl ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\Qt5Core.prl    mainwindow.h tcpserver.h tcp.h tcpserver2.h processor.h database.h main.cpp mainwindow.cpp tcpserver.cpp tcp.cpp tcpserver2.cpp processor.cpp database.cpp mainwindow.ui    
+	$(ZIP) NFC-SPK.zip $(SOURCES) $(DIST) NFC-SPK.pro ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\spec_pre.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\qdevice.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\device_config.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\common\angle.conf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\qconfig.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dcore.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dcore_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dinput.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dinput_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dlogic.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dlogic_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquick.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquick_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquickinput.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquickinput_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquickrender.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3dquickrender_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3drender.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_3drender_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axbase.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axbase_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axcontainer.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axcontainer_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axserver.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_axserver_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_bluetooth.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_bluetooth_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_bootstrap_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_clucene_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_concurrent.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_concurrent_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_core.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_core_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_dbus.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_dbus_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_designer.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_designer_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_designercomponents_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_gui.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_gui_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_help.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_help_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_labscontrols_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_labstemplates_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_location.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_location_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_multimedia.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_multimedia_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_multimediawidgets.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_multimediawidgets_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_network.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_network_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_nfc.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_nfc_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_opengl.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_opengl_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_openglextensions.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_openglextensions_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_platformsupport_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_positioning.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_positioning_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_printsupport.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_printsupport_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qml.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qml_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qmldevtools_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qmltest.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qmltest_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_quick.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_quick_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_quickparticles_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_quickwidgets.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_quickwidgets_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_script.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_script_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_scripttools.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_scripttools_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_sensors.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_sensors_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_serialbus.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_serialbus_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_serialport.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_serialport_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_sql.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_sql_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_svg.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_svg_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_testlib.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_testlib_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_uiplugin.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_uitools.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_uitools_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_webchannel.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_webchannel_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_websockets.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_websockets_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_widgets.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_widgets_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_winextras.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_winextras_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_xml.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_xml_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_xmlpatterns.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\modules\qt_lib_xmlpatterns_private.pri ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\qt_functions.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\qt_config.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\win32\qt_config.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\win32-g++\qmake.conf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\spec_post.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\exclusive_builds.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\default_pre.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\win32\default_pre.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\resolve_config.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\exclusive_builds_post.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\default_post.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\build_pass.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\qml_debug.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\win32\rtti.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\precompile_header.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\warn_on.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\qt.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\resources.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\moc.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\win32\opengl.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\uic.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\file_copies.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\win32\windows.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\testcase_targets.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\exceptions.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\yacc.prf ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\mkspecs\features\lex.prf NFC-SPK.pro ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\qtmain.prl ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\Qt5Widgets.prl ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\Qt5Gui.prl ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\Qt5Network.prl ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\Qt5Sql.prl ..\..\..\Qt5\Qt5.6.3\5.6.3\mingw49_32\lib\Qt5Core.prl    mainwindow.h tcpserver.h tcp.h tcpserver2.h processor.h database.h file.h main.cpp mainwindow.cpp tcpserver.cpp tcp.cpp tcpserver2.cpp processor.cpp database.cpp file.cpp mainwindow.ui    
 
 clean: compiler_clean 
-	-$(DEL_FILE) release\main.o release\mainwindow.o release\tcpserver.o release\tcp.o release\tcpserver2.o release\processor.o release\database.o release\moc_mainwindow.o release\moc_tcpserver.o release\moc_tcp.o release\moc_tcpserver2.o release\moc_processor.o release\moc_database.o
+	-$(DEL_FILE) release\main.o release\mainwindow.o release\tcpserver.o release\tcp.o release\tcpserver2.o release\processor.o release\database.o release\file.o release\moc_mainwindow.o release\moc_tcpserver.o release\moc_tcp.o release\moc_tcpserver2.o release\moc_processor.o release\moc_database.o
 
 distclean: clean 
 	-$(DEL_FILE) $(DESTDIR_TARGET)
@@ -261,6 +265,9 @@ release/moc_mainwindow.cpp: tcpserver2.h \
 		processor.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QDateTime \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qdatetime.h \
+		file.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QFile \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QIODevice \
 		database.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/QSqlDatabase \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/qsqldatabase.h \
@@ -270,6 +277,7 @@ release/moc_mainwindow.cpp: tcpserver2.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/QSqlQuery \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/qsqlquery.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork/QHostAddress \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QLatin1String \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QMainWindow \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qmainwindow.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qtabwidget.h \
@@ -882,6 +890,7 @@ release/moc_database.cpp: ../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/Q
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork/QHostAddress \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork/qhostaddress.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork/qabstractsocket.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QLatin1String \
 		database.h
 	C:\Qt5\Qt5.6.3\5.6.3\mingw49_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/mkspecs/win32-g++ -I"C:/Project/Qt/NFC SPK" -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtGui -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtANGLE -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore database.h -o release\moc_database.cpp
 
@@ -1043,6 +1052,9 @@ release/main.o: main.cpp mainwindow.h \
 		processor.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QDateTime \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qdatetime.h \
+		file.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QFile \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QIODevice \
 		database.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/QSqlDatabase \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/qsqldatabase.h \
@@ -1052,6 +1064,7 @@ release/main.o: main.cpp mainwindow.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/QSqlQuery \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/qsqlquery.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork/QHostAddress \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QLatin1String \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QMainWindow \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qmainwindow.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qtabwidget.h \
@@ -1231,6 +1244,9 @@ release/mainwindow.o: mainwindow.cpp mainwindow.h \
 		processor.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QDateTime \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qdatetime.h \
+		file.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QFile \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QIODevice \
 		database.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/QSqlDatabase \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/qsqldatabase.h \
@@ -1240,6 +1256,7 @@ release/mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/QSqlQuery \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/qsqlquery.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork/QHostAddress \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QLatin1String \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QMainWindow \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qmainwindow.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qtabwidget.h \
@@ -1279,7 +1296,38 @@ release/mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qtabbar.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qrubberband.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QTableWidgetItem \
-		ui_mainwindow.h
+		ui_mainwindow.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QVariant \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QAction \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qaction.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qactiongroup.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QButtonGroup \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qbuttongroup.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QFormLayout \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qformlayout.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QLayout \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qlayout.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qlayoutitem.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qboxlayout.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qgridlayout.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QGroupBox \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qgroupbox.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QHBoxLayout \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QHeaderView \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qheaderview.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QLabel \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qlabel.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QMenuBar \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qmenubar.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qmenu.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QSpacerItem \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QStatusBar \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qstatusbar.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QTabWidget \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QToolBar \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qtoolbar.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QVBoxLayout \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\mainwindow.o mainwindow.cpp
 
 release/tcpserver.o: tcpserver.cpp tcpserver.h \
@@ -1852,8 +1900,72 @@ release/database.o: database.cpp database.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql/qsqlquery.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork/QHostAddress \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork/qhostaddress.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork/qabstractsocket.h
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork/qabstractsocket.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QLatin1String
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\database.o database.cpp
+
+release/file.o: file.cpp file.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QFile \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qfile.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qfiledevice.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qiodevice.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qglobal.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qconfig.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qfeatures.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qsystemdetection.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qprocessordetection.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qcompilerdetection.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qtypeinfo.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qtypetraits.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qisenum.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qsysinfo.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qlogging.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qflags.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qatomic.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qbasicatomic.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qatomic_bootstrap.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qgenericatomic.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qatomic_cxx11.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qatomic_gcc.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qatomic_msvc.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qatomic_armv7.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qatomic_armv6.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qatomic_armv5.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qatomic_ia64.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qatomic_x86.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qatomic_unix.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qglobalstatic.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qmutex.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qnumeric.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qversiontagging.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobject.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobjectdefs.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qnamespace.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobjectdefs_impl.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstring.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qchar.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qbytearray.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qrefcount.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qarraydata.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstringbuilder.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qlist.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qalgorithms.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qiterator.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qhashfunctions.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qpair.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qbytearraylist.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstringlist.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qregexp.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstringmatcher.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qcoreevent.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qscopedpointer.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qmetatype.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qvarlengtharray.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qcontainerfwd.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobject_impl.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QIODevice \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QByteArray
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\file.o file.cpp
 
 release/moc_mainwindow.o: release/moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\moc_mainwindow.o release\moc_mainwindow.cpp
