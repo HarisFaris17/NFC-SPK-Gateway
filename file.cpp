@@ -1,13 +1,13 @@
 #include "file.h"
 
-File::File()
+File::File(QObject *parent)
+    :QFile(parent)
 {
-    setFileName("setting.ini");
-    open(ReadWrite);
+
 }
 
 File::~File(){
-    if (isOpen()) close();
+
 }
 
 void File::parseFile(QString &ipAddress,
@@ -18,11 +18,13 @@ void File::parseFile(QString &ipAddress,
                      QString &userName,
                      QString &password
 ){
+    setFileName(SETTING_FILE);
+    open(ReadOnly);
+
     if (!isOpen()) {
         qDebug("The file failed to be opened");
         return;
     }
-//    bool result = true;
 
     QByteArray data = readAll();
     int index = 0; // starts from index 0
@@ -43,8 +45,56 @@ void File::parseFile(QString &ipAddress,
     password = parseData(data, index, isSuccess);
     if (!isSuccess) qDebug()<<"Host failed to be parsed";
 
+    close();
+}
 
-//    return result;
+void File::saveDatabaseConfig(QString host, QString databasePort, QString databaseName, QString userName, QString password){
+    QString ipAddressTCPServer;
+    QString portTCPServer;
+    QString dummyContainer;
+
+    parseFile(ipAddressTCPServer, portTCPServer, dummyContainer, dummyContainer, dummyContainer, dummyContainer, dummyContainer);
+
+    saveFile(ipAddressTCPServer, portTCPServer, host, databasePort, databaseName, userName, password);
+}
+
+void File::saveTCPServerConfig(QString ipAddress, QString TCPPort){
+    QString host;
+    QString databasePort;
+    QString databaseName;
+    QString userName;
+    QString password;
+    QString dummyContainer;
+
+    parseFile(dummyContainer, dummyContainer, host, databasePort, databaseName, userName, password);
+    qDebug()<<"IP Address"<<ipAddress<<"Port"<<TCPPort;
+
+    saveFile(ipAddress, TCPPort, host, databasePort, databaseName, userName, password);
+}
+
+bool File::saveFile(QString ipAddress,
+                      QString TCPPort,
+                      QString host,
+                      QString databasePort,
+                      QString databaseName,
+                      QString userName,
+                      QString password){
+
+    QByteArray savedString;
+    savedString += ipAddress.toUtf8() + "#";
+    savedString += TCPPort.toUtf8() + "#";
+    savedString += host.toUtf8() + "#";
+    savedString += databasePort.toUtf8() + "#";
+    savedString += databaseName.toUtf8() + "#";
+    savedString += userName.toUtf8() + "#";
+    savedString += password.toUtf8();
+
+    setFileName(SETTING_FILE);
+    open(WriteOnly);
+    if (!isOpen()) return false;
+
+    write(savedString);
+    return true;
 }
 
 //bool File::parseTCPServerInfo(){

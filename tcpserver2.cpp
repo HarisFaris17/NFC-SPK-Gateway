@@ -8,7 +8,9 @@ TcpServer2::TcpServer2()
 void TcpServer2::run(){
     qDebug()<<"current thread tcpserver : "<<QThread::currentThread();
     if(!isListening()){
-        listen(QHostAddress(ipAddress),port);
+        if (ipAddress == "*" || ipAddress.isEmpty()) listen(QHostAddress::Any, port);
+        else listen(QHostAddress(ipAddress),port);
+
         if(isListening()){
             qDebug()<<tr("Listening on : %1:%2").arg(ipAddress).arg(port);
             qDebug()<<"listening thread this : "<<this->thread();

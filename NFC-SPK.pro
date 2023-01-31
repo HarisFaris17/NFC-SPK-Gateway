@@ -27,6 +27,7 @@ HEADERS  += mainwindow.h \
     tcpserver2.h \
     processor.h \
     database.h \
-    file.h
+    file.h \
+    constants.h
 
 FORMS    += mainwindow.ui

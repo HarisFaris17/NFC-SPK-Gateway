@@ -18,11 +18,11 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
-        <string>Tab 1</string>
+        <string>Main</string>
        </attribute>
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
@@ -224,9 +224,6 @@
              </widget>
             </item>
            </layout>
-           <zorder>groupBox_4</zorder>
-           <zorder>groupBox_4</zorder>
-           <zorder>connectDatabasePushButton</zorder>
           </widget>
          </item>
          <item>
@@ -244,10 +241,15 @@
          </item>
         </layout>
        </widget>
+       <zorder>layoutWidget</zorder>
+       <zorder>verticalLayoutWidget</zorder>
+       <zorder>groupBox_2</zorder>
+       <zorder>groupBox_2</zorder>
+       <zorder>groupBox_5</zorder>
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>Tab 2</string>
+        <string>Table</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
@@ -274,7 +276,7 @@
           </column>
           <column>
            <property name="text">
-            <string>Tag</string>
+            <string>Tag ID</string>
            </property>
            <property name="font">
             <font>

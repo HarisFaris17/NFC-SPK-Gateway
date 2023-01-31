@@ -261,9 +261,6 @@ public:
 
         horizontalLayout_5->addWidget(connectDatabasePushButton);
 
-        groupBox_4->raise();
-        groupBox_4->raise();
-        connectDatabasePushButton->raise();
 
         verticalLayout->addWidget(groupBox_3);
 
@@ -272,6 +269,10 @@ public:
         verticalLayout->addItem(verticalSpacer_3);
 
         tabWidget->addTab(tab, QString());
+        layoutWidget->raise();
+        verticalLayoutWidget->raise();
+        groupBox_2->raise();
+        groupBox_2->raise();
         tab_2 = new QWidget();
         tab_2->setObjectName(QStringLiteral("tab_2"));
         horizontalLayout_4 = new QHBoxLayout(tab_2);
@@ -325,7 +326,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -349,18 +350,18 @@ public:
         label_5->setText(QApplication::translate("MainWindow", "Username", Q_NULLPTR));
         label_6->setText(QApplication::translate("MainWindow", "Password", Q_NULLPTR));
         connectDatabasePushButton->setText(QApplication::translate("MainWindow", "Connect", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Tab 1", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Main", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("MainWindow", "Device ID", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
-        ___qtablewidgetitem1->setText(QApplication::translate("MainWindow", "Tag", Q_NULLPTR));
+        ___qtablewidgetitem1->setText(QApplication::translate("MainWindow", "Tag ID", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem2 = tableWidget->horizontalHeaderItem(2);
         ___qtablewidgetitem2->setText(QApplication::translate("MainWindow", "SPK", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem3 = tableWidget->horizontalHeaderItem(3);
         ___qtablewidgetitem3->setText(QApplication::translate("MainWindow", "Counter", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem4 = tableWidget->horizontalHeaderItem(4);
         ___qtablewidgetitem4->setText(QApplication::translate("MainWindow", "Last Update", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Tab 2", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Table", Q_NULLPTR));
     } // retranslateUi
 
 };

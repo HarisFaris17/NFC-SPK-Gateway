@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Processor_t {
-    QByteArrayData data[13];
-    char stringdata0[106];
+    QByteArrayData data[15];
+    char stringdata0[133];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -41,12 +41,15 @@ QT_MOC_LITERAL(8, 58, 7), // "counter"
 QT_MOC_LITERAL(9, 66, 8), // "dateTime"
 QT_MOC_LITERAL(10, 75, 14), // "receiveTcpData"
 QT_MOC_LITERAL(11, 90, 7), // "rawData"
-QT_MOC_LITERAL(12, 98, 7) // "started"
+QT_MOC_LITERAL(12, 98, 18), // "receiveTcpLocation"
+QT_MOC_LITERAL(13, 117, 7), // "tcpData"
+QT_MOC_LITERAL(14, 125, 7) // "started"
 
     },
     "Processor\0sendData\0\0data\0sendDataTable\0"
     "deviceId\0tagId\0spk\0counter\0dateTime\0"
-    "receiveTcpData\0rawData\0started"
+    "receiveTcpData\0rawData\0receiveTcpLocation\0"
+    "tcpData\0started"
 };
 #undef QT_MOC_LITERAL
 
@@ -56,7 +59,7 @@ static const uint qt_meta_data_Processor[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -64,12 +67,13 @@ static const uint qt_meta_data_Processor[] = {
        2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   34,    2, 0x06 /* Public */,
-       4,    5,   37,    2, 0x06 /* Public */,
+       1,    1,   39,    2, 0x06 /* Public */,
+       4,    5,   42,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      10,    1,   48,    2, 0x0a /* Public */,
-      12,    0,   51,    2, 0x0a /* Public */,
+      10,    1,   53,    2, 0x0a /* Public */,
+      12,    1,   56,    2, 0x0a /* Public */,
+      14,    0,   59,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QByteArray,    3,
@@ -77,6 +81,7 @@ static const uint qt_meta_data_Processor[] = {
 
  // slots: parameters
     QMetaType::Void, QMetaType::QByteArray,   11,
+    QMetaType::Void, QMetaType::QByteArray,   13,
     QMetaType::Void,
 
        0        // eod
@@ -91,7 +96,8 @@ void Processor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, v
         case 0: _t->sendData((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
         case 1: _t->sendDataTable((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4])),(*reinterpret_cast< QString(*)>(_a[5]))); break;
         case 2: _t->receiveTcpData((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
-        case 3: _t->started(); break;
+        case 3: _t->receiveTcpLocation((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
+        case 4: _t->started(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -139,13 +145,13 @@ int Processor::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 4)
+        if (_id < 5)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 4;
+        _id -= 5;
     }
     return _id;
 }

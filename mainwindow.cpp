@@ -116,6 +116,9 @@ void MainWindow::connectDisconnectTCP(){
         QString port = portTCPLineEdit->text();
         int portNumber = port.toInt();
 
+        File file;
+        file.saveTCPServerConfig(ipAddress, port);
+
         TcpServer2 *tcpServer =  new TcpServer2();
         QThread *tcpServerThread = new QThread;
 
@@ -253,6 +256,10 @@ void MainWindow::connectDisconnectDatabase(){
         QString databaseName = databaseNameDatabaseLineEdit->text();
         QString username = usernameDatabaseLineEdit->text();
         QString password = passwordDatabaseLineEdit->text();
+
+        File file;
+        file.saveDatabaseConfig(hostDatabase, port, databaseName, username, password);
+
         database = new Database;
         QThread *databaseThread = new QThread;
 
@@ -263,6 +270,7 @@ void MainWindow::connectDisconnectDatabase(){
         connect(database, &Database::databaseDisconnected, this, &MainWindow::databaseDisconnected);
         connect(database, &Database::databaseDisconnected, databaseThread, &QThread::quit);
         connect(database, &Database::databaseConnectionResult, this, &MainWindow::databaseConnectionResult);
+        connect(database, &Database::tableCreateResult, this, &MainWindow::tableCreateResult);
         connect(databaseThread, &QThread::started, database, &Database::run);
         connect(databaseThread, &QThread::finished, database, &Database::deleteLater);
         connect(databaseThread, &QThread::finished, databaseThread, &QThread::deleteLater);
@@ -306,6 +314,16 @@ void MainWindow::databaseDisconnected(){
         stateDatabase = DatabaseDisconnected;
         qDebug()<<"Database disconnected";
     }
+}
+
+void MainWindow::tableCreateResult(bool isDeviceTableCreated,
+                                   bool isDataTableCreated,
+                                   bool isDevicelocationTableCreated,
+                                   bool isDataLocationTableCreated){
+    qDebug()<<"Device table created : " << isDeviceTableCreated;
+    qDebug()<<"Data table created : " << isDataTableCreated;
+    qDebug()<<"Device location table created : " << isDevicelocationTableCreated;
+    qDebug()<<"Data location table created : " << isDataLocationTableCreated;
 }
 
 void MainWindow::changeDisplayStateTCP(){

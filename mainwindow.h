@@ -39,6 +39,7 @@ public Q_SLOTS:
     void connectDisconnectDatabase();
     void databaseConnectionResult(bool isSuccess);
     void databaseDisconnected();
+    void tableCreateResult(bool isDeviceTableCreated, bool isDataTableCreated, bool isDeviceLocationTableCreated, bool isDataLocationTableCreated);
 
 
 
@@ -51,6 +52,7 @@ Q_SIGNALS:
 
     void disconnectDatabase();
     void deleteTimerDatabase();
+
 
 public:
     explicit MainWindow(QWidget *parent = 0);
