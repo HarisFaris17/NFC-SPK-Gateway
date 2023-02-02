@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     tcpserver2.cpp \
     processor.cpp \
     database.cpp \
-    file.cpp
+    file.cpp \
+    locationcalculatorprocess.cpp
 
 HEADERS  += mainwindow.h \
     tcpserver.h \
@@ -28,6 +29,7 @@ HEADERS  += mainwindow.h \
     processor.h \
     database.h \
     file.h \
-    constants.h
+    constants.h \
+    locationcalculatorprocess.h
 
 FORMS    += mainwindow.ui

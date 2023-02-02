@@ -13,10 +13,12 @@ void Processor::receiveTcpData(QByteArray rawData){
         qDebug()<<dataJson;
         return;
     }
+
     QJsonArray dataJsonArray = dataJson.array();
     qDebug()<<dataJsonArray;
     QString wantedMac = tr("DCC7CD766E3A");
     QString wantedMac2 = tr("E985AED59234");
+    File file;
     for (auto dataIterator = dataJsonArray.begin(); dataIterator != dataJsonArray.end(); ++dataIterator){
         QJsonValue dataElement = *dataIterator;
 
@@ -31,6 +33,7 @@ void Processor::receiveTcpData(QByteArray rawData){
         qDebug()<<"The object-----------";
 
         qDebug()<<"iq------------";
+        int locator_idx = dataElementObject.value("no").toInt();
         QJsonObject aoaObject = dataElementObject.value("aoa").toObject();
         int frequency = aoaObject.value("frequency").toInt(2402);
         QList<QVariant> iqJsonArray = aoaObject.value("iq").toArray().toVariantList();
@@ -47,7 +50,14 @@ void Processor::receiveTcpData(QByteArray rawData){
         // MAC should be in upper case in this project
         QString mac = dataElementObject.value("mac").toString().toUpper();
 
-        saveIQ(mac, iqString);
+        file.saveIQ(mac, iqString);
+
+        QByteArray dataToLocationProcessor;
+        dataToLocationProcessor += tr("%1 %2 %3 %4 ").arg(frequency).arg(rssi).arg(mac).arg(locator_idx).toUtf8();
+        dataToLocationProcessor += iqString;
+        qDebug()<<"data to location processor"<<dataToLocationProcessor;
+        locationCalculatorProcessor->write(dataToLocationProcessor);
+
         qDebug()<<frequency<<iq<<rssi<<mac<<iqString;
         if (mac != wantedMac && mac != wantedMac2) {
             qDebug()<<"Not wanted MAC";
@@ -205,7 +215,75 @@ void Processor::receiveTcpLocation(QByteArray tcpData){
 
 void Processor::started(){
     qDebug()<<"Processor started";
+    locationCalculatorProcessor = new QProcess(this);
+
+    connect(locationCalculatorProcessor, &QProcess::started, this, &Processor::locationCalculatorStarted);
+    connect(locationCalculatorProcessor, &QProcess::errorOccurred, this, &Processor::locationCalculatorStarted);
+    connect(locationCalculatorProcessor, &QProcess::readyRead, this, &Processor::readyRead);
+    connect(locationCalculatorProcessor, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &Processor::locationCalculatorFinished);
+    connect(locationCalculatorProcessor, &QProcess::stateChanged, this, &Processor::stateChanged);
+
+    connect(this, &Processor::destroyed, locationCalculatorProcessor, &QProcess::kill);
+//    connect(this, &Processor::sendDataIQLocation, locationCalculatorProcessor, static_cast<void (QProcess::*)(const QByteArray &data)>(&QProcess::write));
+
+    QStringList arguments;
+//    arguments.append("haha");
+//    arguments.append("222");
+
+    QString filePath;
+    filePath = QDir::currentPath() + AOA_CALCULATOR_PROCESS;
+    qDebug()<<"filePath"<<filePath;
+
+    locationCalculatorProcessor->setArguments(arguments);
+    locationCalculatorProcessor->start(filePath, arguments, QProcess::ReadWrite);
 }
+
+void Processor::locationCalculatorStarted(){
+//    QProcess *locationCalculatorProcessor = qobject_cast<QProcess *>(sender());
+    qDebug()<<"Location calculator program started"<<locationCalculatorProcessor->state();
+//    if (locationCalculatorProcessor->state() == QProcess::N)
+}
+
+void Processor::readyRead(){
+    qDebug()<<__func__<<"called";
+//    QProcess *locationCalculatorProcessor = qobject_cast<QProcess *>(sender());
+    QByteArray locationArray = locationCalculatorProcessor->readAll();
+    while (locationCalculatorProcessor->waitForReadyRead(10)) {
+        locationArray += locationCalculatorProcessor->readAll();
+    }
+    qDebug()<<locationArray;
+
+//    qDebug()<<"Sending iq data....";
+//    QByteArray data;
+//    data = "2402 -52 ABCSDA 4 155,-34,22,155,-166,6,3,-166,161,-4,-22,151,-157,-43,36,-159,-78,142,-28,10,-104,131,130,-152,-140,88,-32,-2,-163,27,183,-67,-164,-4,-24,-27,-163,-56,188,69,-138,-99,0,-30,-100,-135,128,154,-54,-153,13,-30,-22,-162,43,199,44,-161,27,-18,98,-124,-90,178,118,-101,32,2,157,-64,-181,96,161,-20,21,18,166,32,-206,-26,151,58,7,26,118,110,-145,-127,78,145,-13,30,35,161,-63,-188,-9,158,-27,20,-66,159,49,-191,-100,123,-28,2,-139,86,151,-124,-153,54,-28,-15,-168,10,204,-27,-157,-42,-15,-31,-136,-91,176,89,-108,-124,-5,-30,-56,-148,92,183,-23,-167,19,-23,42,-161,-23,198,72,-151,29,-11,122,-117,-128,148,140,-73,26,11,160,-40,-190,61,160,17,22,21\n";
+////        Q_EMIT sendDataIQLocation(data);
+//    locationCalculatorProcessor->write(data);
+//    qDebug()<<"Done" <<data;
+}
+
+void Processor::errorOccured(QProcess::ProcessError error){
+    qDebug()<<"Error opening calculator"<<error;
+}
+
+void Processor::locationCalculatorFinished(int exitCode, QProcess::ExitStatus exitStatus){
+    qDebug()<<"Location calculator finished"<<exitCode<<exitStatus;
+}
+
+void Processor::stateChanged(QProcess::ProcessState state){
+    qDebug()<<"state Changed"<<state;
+    if (state == QProcess::Running){
+//        qDebug()<<"Sending iq data....";
+//        QProcess *locationCalculatorProcessor = qobject_cast<QProcess *>(sender());
+//        QByteArray data;
+//        data = "2402 155,-34,22,155,-166,6,3,-166,161,-4,-22,151,-157,-43,36,-159,-78,142,-28,10,-104,131,130,-152,-140,88,-32,-2,-163,27,183,-67,-164,-4,-24,-27,-163,-56,188,69,-138,-99,0,-30,-100,-135,128,154,-54,-153,13,-30,-22,-162,43,199,44,-161,27,-18,98,-124,-90,178,118,-101,32,2,157,-64,-181,96,161,-20,21,18,166,32,-206,-26,151,58,7,26,118,110,-145,-127,78,145,-13,30,35,161,-63,-188,-9,158,-27,20,-66,159,49,-191,-100,123,-28,2,-139,86,151,-124,-153,54,-28,-15,-168,10,204,-27,-157,-42,-15,-31,-136,-91,176,89,-108,-124,-5,-30,-56,-148,92,183,-23,-167,19,-23,42,-161,-23,198,72,-151,29,-11,122,-117,-128,148,140,-73,26,11,160,-40,-190,61,160,17,22,21";
+//        Q_EMIT sendDataIQLocation(data);
+//        locationCalculatorProcessor->write(data);
+    }
+}
+
+//void Processor::locationCalculatorFinished(int exitCode){
+//    qDebug()<<"Location calculator finished"<<exitCode;
+//}
 
 bool Processor::convertToBytes(QString stringedBytes, QByteArray *p_result){
     if (p_result == NULL) {
@@ -320,24 +398,8 @@ bool Processor::extractData(QByteArray rawData, QByteArray *p_result){
     return true;
 }
 
-bool Processor::saveIQ(const QString macAddress, const QByteArray dataIQ){
-    QFile file;
 
-    QString fileName = tr("C:/Test AoA/IQ_%1.csv").arg(macAddress);
-    file.setFileName(fileName);
-
-    if (!file.open(QFile::ReadOnly | QFile::Append)){
-        qDebug()<<"The file failed to be opened or created";
-        return false;
-    }
-
-//    QByteArray dataIQBytes = dataIQ + "\n";
-    qDebug()<<"Saving IQ Data....";
-    file.write(dataIQ);
-    qDebug()<<dataIQ;
-    file.close();
-}
 
 Processor::~Processor(){
-
+    locationCalculatorProcessor->kill();
 }

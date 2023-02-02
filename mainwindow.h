@@ -70,7 +70,9 @@ private:
     QPushButton *connectTCPPushButton;
     QPushButton *connectDatabasePushButton;
     QTextBrowser *console;
-    QTableWidget *tableWidget;
+
+    QTableWidget *tableWidgetCounting;
+    QTableWidget *tableWidgetLocation;
     QTableWidgetItem *protoTableWidgetItem;
 
 //    QPushButton *unlistenPushButton;

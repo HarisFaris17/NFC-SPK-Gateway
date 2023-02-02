@@ -1,6 +1,8 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
+#include "constants.h"
+#include "file.h"
 #include <QObject>
 #include <QString>
 #include <QJsonObject>
@@ -12,6 +14,9 @@
 #include <QFile>
 #include <QList>
 #include <QVariant>
+#include <QProcess>
+#include <QStringList>
+#include <QDir>
 
 class Processor : public QObject
 {
@@ -21,9 +26,17 @@ public Q_SLOTS:
     void receiveTcpLocation(QByteArray tcpData);
     void started();
 
+    void locationCalculatorStarted();
+    void readyRead();
+    void errorOccured(QProcess::ProcessError error);
+    void locationCalculatorFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void stateChanged(QProcess::ProcessState state);
+
 Q_SIGNALS:
     void sendData(QByteArray data);
     void sendDataTable(QString deviceId, QString tagId, QString spk, QString counter, QString dateTime);
+
+//    void sendDataIQLocation(const QByteArray &data);
 public:
     Processor();
     ~Processor();
@@ -33,8 +46,9 @@ private:
     bool parseData(QByteArray data, int index, QString *p_result);
     bool extractData(QByteArray rawData, QByteArray *p_result);
 
-
     bool saveIQ(const QString macAddress, const QByteArray dataIQ);
+private:
+    QProcess *locationCalculatorProcessor;
 };
 
 #endif // PROCESSOR_H

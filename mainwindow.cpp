@@ -17,9 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     usernameDatabaseLineEdit = ui->usernameDatabaseLineEdit;
     passwordDatabaseLineEdit = ui->passwordDatabaseLineEdit;
     console = ui->console;
-    tableWidget = ui->tableWidget;
-
-
+    tableWidgetCounting = ui->tableWidgetCounting;
+    tableWidgetLocation = ui->tableWidgetLocation;
 
     processor = new Processor;
     QThread *processorThread = new QThread;
@@ -230,18 +229,18 @@ void MainWindow::receiveDataTable(QString deviceId, QString tagId, QString spk, 
     dateTimeItem->setText(dateTime);
 
     if (deviceId == "DCC7CD766E3A"){
-        tableWidget->setItem(0, DEVICE_ID, deviceIdItem);
-        tableWidget->setItem(0, TAG_ID, tagIdItem);
-        tableWidget->setItem(0, SPK, spkItem);
-        tableWidget->setItem(0, COUNTER, counterItem);
-        tableWidget->setItem(0, LAST_UPDATE, dateTimeItem);
+        tableWidgetCounting->setItem(0, DEVICE_ID, deviceIdItem);
+        tableWidgetCounting->setItem(0, TAG_ID, tagIdItem);
+        tableWidgetCounting->setItem(0, SPK, spkItem);
+        tableWidgetCounting->setItem(0, COUNTER, counterItem);
+        tableWidgetCounting->setItem(0, LAST_UPDATE, dateTimeItem);
     }
     else if (deviceId == "E985AED59234"){
-        tableWidget->setItem(1, DEVICE_ID, deviceIdItem);
-        tableWidget->setItem(1, TAG_ID, tagIdItem);
-        tableWidget->setItem(1, SPK, spkItem);
-        tableWidget->setItem(1, COUNTER, counterItem);
-        tableWidget->setItem(1, LAST_UPDATE, dateTimeItem);
+        tableWidgetCounting->setItem(1, DEVICE_ID, deviceIdItem);
+        tableWidgetCounting->setItem(1, TAG_ID, tagIdItem);
+        tableWidgetCounting->setItem(1, SPK, spkItem);
+        tableWidgetCounting->setItem(1, COUNTER, counterItem);
+        tableWidgetCounting->setItem(1, LAST_UPDATE, dateTimeItem);
     }
 }
 

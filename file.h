@@ -6,6 +6,7 @@
 #include <QIODevice>
 #include <QByteArray>
 #include <QDebug>
+#include <QDir>
 
 class File : public QFile
 {
@@ -36,6 +37,9 @@ public:
                   QString databaseName,
                   QString userName,
                   QString password);
+
+    bool saveIQ(const QString macAddress, const QByteArray dataIQ);
+
 private:
     QByteArray parseData(QByteArray &data,int &index, bool &isSuccess);
 

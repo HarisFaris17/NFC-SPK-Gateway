@@ -97,6 +97,24 @@ bool File::saveFile(QString ipAddress,
     return true;
 }
 
+bool File::saveIQ(const QString macAddress, const QByteArray dataIQ){
+    QFile file;
+
+    QString fileName = QDir::currentPath() + tr(AOA_IQ_FILE).arg(macAddress);
+    file.setFileName(fileName);
+
+    if (!file.open(QFile::ReadOnly | QFile::Append)){
+        qDebug()<<"The file failed to be opened or created";
+        return false;
+    }
+
+//    QByteArray dataIQBytes = dataIQ + "\n";
+    qDebug()<<"Saving IQ Data....";
+    file.write(dataIQ);
+    qDebug()<<dataIQ;
+    file.close();
+}
+
 //bool File::parseTCPServerInfo(){
 //    if (isOpen()) return false;
 
