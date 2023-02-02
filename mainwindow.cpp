@@ -18,12 +18,17 @@ MainWindow::MainWindow(QWidget *parent) :
     passwordDatabaseLineEdit = ui->passwordDatabaseLineEdit;
     console = ui->console;
     tableWidgetCounting = ui->tableWidgetCounting;
-    tableWidgetLocation = ui->tableWidgetLocation;
+//    tableWidgetLocation = ui->tableWidgetLocation;
+
+    QList<QString> deviceIds;
+    deviceIds << tr("DCC7CD766E3A") << tr("E985AED59234");
+    Common::replaceDeviceIds(deviceIds);
 
     processor = new Processor;
     QThread *processorThread = new QThread;
     connect(processor, &Processor::sendData, this, &MainWindow::receiveDataConsole);
     connect(processor, &Processor::sendDataTable, this, &MainWindow::receiveDataTable);
+    connect(processor, &Processor::sendLocation, this, &MainWindow::receiveLocation);
     connect(this, &MainWindow::destroyed, processorThread, &QThread::quit);
     connect(processorThread, &QThread::started, processor, &Processor::started);
     connect(processorThread, &QThread::finished, processor, &Processor::deleteLater);
@@ -128,6 +133,7 @@ void MainWindow::connectDisconnectTCP(){
 
         connect(tcpServerThread, &QThread::started, tcpServer, &TcpServer2::run);
         connect(tcpServerThread, &QThread::finished, tcpServer, &TcpServer2::deleteLater);
+        connect(tcpServerThread, &QThread::finished, tcpServer, &TcpServer2::close);
         connect(tcpServerThread, &QThread::finished, tcpServerThread, &QThread::deleteLater);
         connect(tcpServer, &TcpServer2::unlistened, tcpServerThread, &QThread::quit);
         connect(tcpServer, &TcpServer2::unlistened, this, &MainWindow::unlistenedTcp);
@@ -203,11 +209,12 @@ void MainWindow::timerDatabaseTimeout(){
     Q_EMIT deleteTimerDatabase();
 }
 
-void MainWindow::receiveDataConsole(QByteArray data){
+void MainWindow::receiveDataConsole(QString data){
     qDebug()<<data;
 
-    qDebug()<<QString::fromUtf8(data);
-    console->append(QString::fromUtf8(data));
+//    qDebug()<<QString::fromUtf8(data);
+//    console->append(QString::fromUtf8(data));
+    console->append(data);
 }
 
 void MainWindow::receiveDataTable(QString deviceId, QString tagId, QString spk, QString counter, QString dateTime){
@@ -242,6 +249,25 @@ void MainWindow::receiveDataTable(QString deviceId, QString tagId, QString spk, 
         tableWidgetCounting->setItem(1, COUNTER, counterItem);
         tableWidgetCounting->setItem(1, LAST_UPDATE, dateTimeItem);
     }
+}
+
+void MainWindow::receiveLocation(QString deviceId, int locator, double x, double y, double z){
+//    qDebug()<<"\n\n\nLocation received\n\n\n"<<locator<<deviceId<<x<<y<<z;
+    int rowNumberDeviceId = Common::indexDeviceId(deviceId);
+    qDebug()<<"\n\n\nLocation received\n\n\n"<<locator<<deviceId<<rowNumberDeviceId<<x<<y<<z;
+    if (rowNumberDeviceId == -1 ) return;
+
+    QTableWidgetItem *ar_x = protoTableWidgetItem->clone();
+    QTableWidgetItem *ar_y = protoTableWidgetItem->clone();
+    QTableWidgetItem *ar_z = protoTableWidgetItem->clone();
+
+    ar_x->setText(QString::number(x, 'f', 8));
+    ar_y->setText(QString::number(y, 'f', 8));
+    ar_z->setText(QString::number(z, 'f', 8));
+
+    tableWidgetCounting->setItem(rowNumberDeviceId, AR_HEADER_OFFSET(locator) + 0, ar_x);
+    tableWidgetCounting->setItem(rowNumberDeviceId, AR_HEADER_OFFSET(locator) + 1, ar_y);
+    tableWidgetCounting->setItem(rowNumberDeviceId, AR_HEADER_OFFSET(locator) + 2, ar_z);
 }
 
 void MainWindow::connectDisconnectDatabase(){

@@ -65,8 +65,8 @@ void Processor::receiveTcpData(QByteArray rawData){
         }
         qDebug()<<"MACCCCCCCCC wanted";
 
-        QString stringedBytesData = dataElementObject.value("rawData").toString();
-        qDebug()<<"rawData"<<stringedBytesData;
+        QString stringedBytesData = dataElementObject.value("raw").toString();
+        qDebug()<<"raw data"<<stringedBytesData;
         QByteArray data;
 
         if (!convertToBytes(stringedBytesData, &data)){
@@ -74,8 +74,13 @@ void Processor::receiveTcpData(QByteArray rawData){
             // here we continue the loops since maybe there are some other MAC address we want to inspect the data
             continue;
         }
-        QByteArray extractedData;
 
+        if (data.isEmpty()){
+            qDebug()<<"The data is empty";
+            continue;
+        }
+
+        QByteArray extractedData;
         if (!extractData(data, &extractedData)){
             qDebug()<<"Failed to extract data";
             return;
@@ -83,11 +88,11 @@ void Processor::receiveTcpData(QByteArray rawData){
 
         QString currentTimeString = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
 
-        extractedData += tr("#") + wantedMac;
-        extractedData += tr("#") + currentTimeString;
+//        extractedData += tr("#") + wantedMac;
+//        extractedData += tr("#") + currentTimeString;
 
 
-        Q_EMIT sendData(extractedData);
+//        Q_EMIT sendData(extractedData);
 
         QString cmd;
         QString spk;
@@ -114,10 +119,16 @@ void Processor::receiveTcpData(QByteArray rawData){
             qDebug()<<"parsing first data failed";
             return;
         }
+        tagId = tagId.toUpper();
 
         qDebug()<<"The cmd \n\n\n"<<cmd;
         qDebug()<<spk;
         qDebug()<<counter;
+        qDebug()<<tagId;
+
+        QString dataToBeSent = cmd + "#" + spk + "#" + counter + "#" + tagId + "#" + wantedMac + "#" + currentTimeString;
+        Q_EMIT sendData(dataToBeSent);
+
         if (cmd == "DAT") Q_EMIT sendDataTable(mac, tagId, spk, counter, currentTimeString);
         else if (cmd == "DON") Q_EMIT sendDataTable(mac, "", spk, counter, currentTimeString);
     }
@@ -155,9 +166,14 @@ void Processor::receiveTcpLocation(QByteArray tcpData){
         }
         qDebug()<<"MACCCCCCCCC wanted";
 
-        QString stringedBytesData = dataElementObject.value("rawData").toString();
-        qDebug()<<"rawData"<<stringedBytesData;
+        QString stringedBytesData = dataElementObject.value("raw").toString();
+        qDebug()<<"raw data"<<stringedBytesData;
         QByteArray data;
+
+        if (data.isEmpty()){
+            qDebug()<<"The data is empty";
+            continue;
+        }
 
         if (!convertToBytes(stringedBytesData, &data)){
             qDebug()<<"Failed to convert";
@@ -173,11 +189,11 @@ void Processor::receiveTcpLocation(QByteArray tcpData){
 
         QString currentTimeString = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
 
-        extractedData += tr("#") + wantedMac;
-        extractedData += tr("#") + currentTimeString;
+//        extractedData += tr("#") + wantedMac;
+//        extractedData += tr("#") + currentTimeString;
 
 
-        Q_EMIT sendData(extractedData);
+//        Q_EMIT sendData(extractedData);
 
         QString cmd;
         QString spk;
@@ -187,28 +203,36 @@ void Processor::receiveTcpLocation(QByteArray tcpData){
 
         qDebug()<<"Parsing...";
         if (!parseData(extractedData, 0, &cmd)) {
-            qDebug()<<"parsing first data failed";
+            qDebug()<<"parsing cmd data failed";
             return;
         }
 
         if (!parseData(extractedData, 1, &spk)) {
-            qDebug()<<"parsing first data failed";
+            qDebug()<<"parsing spk data failed";
             return;
         }
 
         if (!parseData(extractedData, 2, &counter)){
-            qDebug()<<"parsing first data failed";
+            qDebug()<<"parsing counter data failed";
             return;
         }\
         if (!parseData(extractedData, 3, &tagId)) {
-            qDebug()<<"parsing first data failed";
+            qDebug()<<"parsing tag data failed";
             return;
         }
+        // the tag id sent by G2 gateway is in lowercase characters, but we want to be uppercase characters
+        tagId = tagId.toUpper();
 
         qDebug()<<"The cmd \n\n\n"<<cmd;
         qDebug()<<spk;
         qDebug()<<counter;
-        if (cmd == "DAT") Q_EMIT sendDataTable(mac, tagId, spk, counter, currentTimeString);
+        qDebug()<<tagId;
+
+        QString dataToBeSent = cmd + "#" + spk + "#" + counter + "#" + tagId;
+        if (cmd == "DAT") {
+            Q_EMIT sendData(dataToBeSent);
+            Q_EMIT sendDataTable(mac, tagId, spk, counter, currentTimeString);
+        }
         else if (cmd == "DON") Q_EMIT sendDataTable(mac, "", spk, counter, currentTimeString);
     }
 }
@@ -247,11 +271,27 @@ void Processor::locationCalculatorStarted(){
 void Processor::readyRead(){
     qDebug()<<__func__<<"called";
 //    QProcess *locationCalculatorProcessor = qobject_cast<QProcess *>(sender());
-    QByteArray locationArray = locationCalculatorProcessor->readAll();
+    QByteArray locationDataRaw = locationCalculatorProcessor->readAll();
     while (locationCalculatorProcessor->waitForReadyRead(10)) {
-        locationArray += locationCalculatorProcessor->readAll();
+        locationDataRaw += locationCalculatorProcessor->readAll();
     }
-    qDebug()<<locationArray;
+    qDebug()<<locationDataRaw.remove(locationDataRaw.length() - 5, 4);
+
+    QString locationDataString = QString(locationDataRaw);
+    qDebug()<<locationDataString;
+
+    QStringList locationData = locationDataString.split(" ");
+    qDebug()<<locationData;
+
+    QString mac = locationData[0];
+    int locator = locationData[1].toInt();
+    double x = locationData[2].toDouble();
+    double y = locationData[3].toDouble();
+    double z = locationData[4].toDouble();
+
+    qDebug()<<"Data From Calculator" << mac << locator << x << y << z;
+
+    sendLocation(mac, locator, x, y, z);
 
 //    qDebug()<<"Sending iq data....";
 //    QByteArray data;
@@ -322,9 +362,14 @@ bool Processor::convertToBytes(QString stringedBytes, QByteArray *p_result){
         *p_result += byte;
         if (slashCounter == 3) {
             // the +2 here to jump to the index where the stringed NFC ID started, since every bytes in stringedbytes occupy 2 character.
-            for (int j = i+2; j<stringedBytesLength; j++){
-                bytes += byteArrayedBytes[j];
-                *p_result += byteArrayedBytes[j];
+            for (int j = i+2; ; j++){
+                if (j >= stringedBytesLength) break;
+
+                char character = byteArrayedBytes[j];
+                // in the scenario sending data with CTE to G2 minew gateway, the bluetooth device should emit fixed amount 31 bytes data, and the device only wanted to sending data less than 31 bytes, therefore after the NFC ID bytes, the bluetooth device append the character '#' and series of 0's
+                if (character == '#') break;
+                bytes += character;
+                *p_result += character;
             }
             break;
         }
@@ -391,7 +436,7 @@ bool Processor::extractData(QByteArray rawData, QByteArray *p_result){
 //        j++;
 //    }
     int j = 0;
-    for (int i = 7; i < rawData.length(); i++){
+    for (int i = 11; i < rawData.length()-12; i++){
         (*p_result)[j] = rawData[i];
         j++;
     }

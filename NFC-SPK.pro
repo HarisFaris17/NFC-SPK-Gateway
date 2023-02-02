@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     processor.cpp \
     database.cpp \
     file.cpp \
-    locationcalculatorprocess.cpp
+    locationcalculatorprocess.cpp \
+    common.cpp
 
 HEADERS  += mainwindow.h \
     tcpserver.h \
@@ -30,6 +31,7 @@ HEADERS  += mainwindow.h \
     database.h \
     file.h \
     constants.h \
-    locationcalculatorprocess.h
+    locationcalculatorprocess.h \
+    common.h
 
 FORMS    += mainwindow.ui

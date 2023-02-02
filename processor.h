@@ -27,14 +27,17 @@ public Q_SLOTS:
     void started();
 
     void locationCalculatorStarted();
-    void readyRead();
     void errorOccured(QProcess::ProcessError error);
     void locationCalculatorFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void stateChanged(QProcess::ProcessState state);
 
+private Q_SLOTS:
+    void readyRead();
+
 Q_SIGNALS:
-    void sendData(QByteArray data);
+    void sendData(QString data);
     void sendDataTable(QString deviceId, QString tagId, QString spk, QString counter, QString dateTime);
+    void sendLocation(QString deviceId, int locator, double x, double y, double z);
 
 //    void sendDataIQLocation(const QByteArray &data);
 public:

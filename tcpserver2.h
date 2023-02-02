@@ -38,6 +38,7 @@ Q_SIGNALS:
     \
 public:
     TcpServer2();
+    ~TcpServer2();
     void run();
 
 private:

@@ -8,6 +8,7 @@ INPUT(
 ./debug\database.o
 ./debug\file.o
 ./debug\locationcalculatorprocess.o
+./debug\common.o
 ./debug\moc_mainwindow.o
 ./debug\moc_tcpserver.o
 ./debug\moc_tcp.o

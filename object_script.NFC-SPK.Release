@@ -8,6 +8,7 @@ INPUT(
 ./release\database.o
 ./release\file.o
 ./release\locationcalculatorprocess.o
+./release\common.o
 ./release\moc_mainwindow.o
 ./release\moc_tcpserver.o
 ./release\moc_tcp.o

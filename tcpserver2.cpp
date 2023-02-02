@@ -5,6 +5,11 @@ TcpServer2::TcpServer2()
     qDebug()<<"init thread tcpserver : "<<QThread::currentThread();
 }
 
+TcpServer2::~TcpServer2()
+{
+    close();
+}
+
 void TcpServer2::run(){
     qDebug()<<"current thread tcpserver : "<<QThread::currentThread();
     if(!isListening()){

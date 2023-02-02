@@ -3,6 +3,7 @@
 
 #include "tcpserver2.h"
 #include "processor.h"
+#include "common.h"
 #include "file.h"
 #include "database.h"
 #include <QMainWindow>
@@ -16,6 +17,7 @@
 #include <QByteArray>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QList>
 
 namespace Ui {
 class MainWindow;
@@ -33,8 +35,9 @@ public Q_SLOTS:
     void timerTcpTimeout();
     void timerDatabaseTimeout();
 
-    void receiveDataConsole(QByteArray data);
+    void receiveDataConsole(QString data);
     void receiveDataTable(QString deviceId, QString tagId, QString spk, QString counter, QString dateTime);
+    void receiveLocation(QString deviceId, int locator, double x, double y, double z);
 
     void connectDisconnectDatabase();
     void databaseConnectionResult(bool isSuccess);
@@ -72,7 +75,7 @@ private:
     QTextBrowser *console;
 
     QTableWidget *tableWidgetCounting;
-    QTableWidget *tableWidgetLocation;
+//    QTableWidget *tableWidgetLocation;
     QTableWidgetItem *protoTableWidgetItem;
 
 //    QPushButton *unlistenPushButton;
@@ -81,6 +84,7 @@ private:
 //    QTimer *timerTcp = NULL;
     Processor *processor = NULL;
     Database *database = NULL;
+
 
     typedef enum{
         WaitingTCP,
@@ -99,8 +103,22 @@ private:
         TAG_ID,
         SPK,
         COUNTER,
+        AR1_X,
+        AR1_Y,
+        AR1_Z,
+        AR2_X,
+        AR2_Y,
+        AR2_Z,
+        AR3_X,
+        AR3_Y,
+        AR3_Z,
+        AR4_X,
+        AR4_Y,
+        AR4_Z,
         LAST_UPDATE
     }ColumnNumber;
+
+#define AR_HEADER_OFFSET(locator) (AR1_X + 3 * locator)
 
     StateTcp stateTcp = TCPStop;
     StateDatabase stateDatabase = DatabaseDisconnected;
