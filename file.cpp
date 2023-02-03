@@ -104,7 +104,7 @@ bool File::saveIQ(const QString macAddress, const QByteArray dataIQ){
     file.setFileName(fileName);
 
     if (!file.open(QFile::ReadOnly | QFile::Append)){
-        qDebug()<<"The file failed to be opened or created";
+        qDebug()<<"The file failed to be opened or created" << fileName;
         return false;
     }
 
@@ -123,6 +123,23 @@ bool File::saveIQ(const QString macAddress, const QByteArray dataIQ){
 
 //    return retult;
 //}
+
+bool File::saveCoordinates(const QString &macAddress, const int &locator, const QByteArray &xyz){
+    QFile file;
+
+    QString fileName = QDir::currentPath() + tr(AOA_COORDINATES_FILE).arg(locator).arg(macAddress);
+    file.setFileName(fileName);
+
+    if (!file.open(QFile::ReadOnly | QFile::Append)){
+        qDebug()<<"The file failed to be opened or created" << fileName;
+        return false;
+    }
+
+    qDebug()<<"Saving Coordinates Data....";
+    file.write(xyz);
+    qDebug()<<xyz;
+    file.close();
+}
 
 QByteArray File::parseData(QByteArray &data, int &index, bool &isSuccess){
     isSuccess = true;

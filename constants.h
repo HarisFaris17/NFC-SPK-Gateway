@@ -8,6 +8,7 @@
 
 #define SETTING_FILE                    "setting.ini"
 #define AOA_IQ_FILE                     "/Test AoA/IQ_%1.csv"
+#define AOA_COORDINATES_FILE            "/Test AoA/COORDINATE_%1_%2.csv"
 #define AOA_CALCULATOR_PROCESS          "/aoa_calculator_final/aoa_calculator_final.exe"
 
 #endif // CONSTANTS_H

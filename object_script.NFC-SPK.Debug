@@ -9,10 +9,12 @@ INPUT(
 ./debug\file.o
 ./debug\locationcalculatorprocess.o
 ./debug\common.o
+./debug\settinglocator.o
 ./debug\moc_mainwindow.o
 ./debug\moc_tcpserver.o
 ./debug\moc_tcp.o
 ./debug\moc_tcpserver2.o
 ./debug\moc_processor.o
 ./debug\moc_database.o
+./debug\moc_settinglocator.o
 );

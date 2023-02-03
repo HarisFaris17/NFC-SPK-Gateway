@@ -3,9 +3,11 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    settingLocatorUi(new SettingLocator)
 {
     ui->setupUi(this);
+
     connectTCPPushButton = ui->connectTCPPushButton;
     connectDatabasePushButton = ui->connectDatabasePushButton;
 //    unlistenPushButton = ui->unlistenPushButton;
@@ -66,6 +68,8 @@ MainWindow::MainWindow(QWidget *parent) :
     databaseNameDatabaseLineEdit->setText(databaseName);
     usernameDatabaseLineEdit->setText(username);
     passwordDatabaseLineEdit->setText(password);
+
+    settingLocatorUi->show();
 
     connectDisconnectTCP();
     connectDisconnectDatabase();
@@ -271,6 +275,7 @@ void MainWindow::receiveLocation(QString deviceId, int locator, double x, double
 }
 
 void MainWindow::connectDisconnectDatabase(){
+
     qDebug()<<"connect disconnect database";
 
     if (stateDatabase == DatabaseDisconnected){
@@ -398,6 +403,11 @@ void MainWindow::changeDisplayDatabase(){
         usernameDatabaseLineEdit->setEnabled(true);
         passwordDatabaseLineEdit->setEnabled(true);
     }
+}
+
+void MainWindow::closeEvent(QCloseEvent *closeEvent){
+    settingLocatorUi->close();
+    closeEvent->accept();
 }
 
 MainWindow::~MainWindow()

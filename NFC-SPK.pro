@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     database.cpp \
     file.cpp \
     locationcalculatorprocess.cpp \
-    common.cpp
+    common.cpp \
+    settinglocator.cpp
 
 HEADERS  += mainwindow.h \
     tcpserver.h \
@@ -32,6 +33,8 @@ HEADERS  += mainwindow.h \
     file.h \
     constants.h \
     locationcalculatorprocess.h \
-    common.h
+    common.h \
+    settinglocator.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    settinglocator.ui

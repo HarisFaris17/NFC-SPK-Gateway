@@ -17,6 +17,7 @@
 #include <QProcess>
 #include <QStringList>
 #include <QDir>
+#include <QVector>
 
 class Processor : public QObject
 {
@@ -52,6 +53,21 @@ private:
     bool saveIQ(const QString macAddress, const QByteArray dataIQ);
 private:
     QProcess *locationCalculatorProcessor;
+
+    class Coordinate{
+        Coordinate(double x, double y, double z){
+            this->x = x;
+            this->y = y;
+            this->z = z;
+        }
+
+        double x;
+        double y;
+        double z;
+    };
+
+//    QList<Coordinate> coordinates;
+    QVector<QList<Coordinate>> coordinatesBuffer = QVector<QList<Coordinate>>(4);
 };
 
 #endif // PROCESSOR_H

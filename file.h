@@ -39,6 +39,7 @@ public:
                   QString password);
 
     bool saveIQ(const QString macAddress, const QByteArray dataIQ);
+    bool saveCoordinates(const QString &macAddress, const int &locator, const QByteArray &xyz);
 
 private:
     QByteArray parseData(QByteArray &data,int &index, bool &isSuccess);

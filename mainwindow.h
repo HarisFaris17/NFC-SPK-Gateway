@@ -5,6 +5,7 @@
 #include "processor.h"
 #include "common.h"
 #include "file.h"
+#include "settinglocator.h"
 #include "database.h"
 #include <QMainWindow>
 #include <QPushButton>
@@ -18,6 +19,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QList>
+#include <QCloseEvent>
 
 namespace Ui {
 class MainWindow;
@@ -74,6 +76,8 @@ private:
     QPushButton *connectDatabasePushButton;
     QTextBrowser *console;
 
+    SettingLocator *settingLocatorUi;
+
     QTableWidget *tableWidgetCounting;
 //    QTableWidget *tableWidgetLocation;
     QTableWidgetItem *protoTableWidgetItem;
@@ -129,6 +133,7 @@ private:
 private:
     void changeDisplayStateTCP();
     void changeDisplayDatabase();
+    void closeEvent(QCloseEvent *closeEvent);
 };
 
 #endif // MAINWINDOW_H
