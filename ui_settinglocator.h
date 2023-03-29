@@ -29,7 +29,7 @@ QT_BEGIN_NAMESPACE
 class Ui_SettingLocator
 {
 public:
-    QVBoxLayout *verticalLayout_8;
+    QVBoxLayout *verticalLayout_9;
     QGroupBox *groupBox_2;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
@@ -96,17 +96,26 @@ public:
     QLabel *label_27;
     QSpacerItem *horizontalSpacer_13;
     QLineEdit *locator4ZLineEdit;
-    QHBoxLayout *horizontalLayout_15;
-    QPushButton *okPushButton;
-    QPushButton *cancelPushButton;
+    QPushButton *applyDistancePushButton;
+    QGroupBox *groupBox_3;
+    QVBoxLayout *verticalLayout_8;
+    QHBoxLayout *horizontalLayout_18;
+    QHBoxLayout *horizontalLayout_16;
+    QLabel *label_2;
+    QLineEdit *rssi1mLineEdit;
+    QSpacerItem *horizontalSpacer_17;
+    QHBoxLayout *horizontalLayout_17;
+    QLabel *label_5;
+    QLineEdit *rssi2mLineEdit;
+    QPushButton *applyCalibrationPushButton;
 
     void setupUi(QDialog *SettingLocator)
     {
         if (SettingLocator->objectName().isEmpty())
             SettingLocator->setObjectName(QStringLiteral("SettingLocator"));
-        SettingLocator->resize(615, 399);
-        verticalLayout_8 = new QVBoxLayout(SettingLocator);
-        verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
+        SettingLocator->resize(402, 499);
+        verticalLayout_9 = new QVBoxLayout(SettingLocator);
+        verticalLayout_9->setObjectName(QStringLiteral("verticalLayout_9"));
         groupBox_2 = new QGroupBox(SettingLocator);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
         verticalLayout = new QVBoxLayout(groupBox_2);
@@ -410,27 +419,65 @@ public:
 
         verticalLayout->addLayout(horizontalLayout_14);
 
+        applyDistancePushButton = new QPushButton(groupBox_2);
+        applyDistancePushButton->setObjectName(QStringLiteral("applyDistancePushButton"));
 
-        verticalLayout_8->addWidget(groupBox_2);
-
-        horizontalLayout_15 = new QHBoxLayout();
-        horizontalLayout_15->setObjectName(QStringLiteral("horizontalLayout_15"));
-        okPushButton = new QPushButton(SettingLocator);
-        okPushButton->setObjectName(QStringLiteral("okPushButton"));
-
-        horizontalLayout_15->addWidget(okPushButton);
-
-        cancelPushButton = new QPushButton(SettingLocator);
-        cancelPushButton->setObjectName(QStringLiteral("cancelPushButton"));
-
-        horizontalLayout_15->addWidget(cancelPushButton);
+        verticalLayout->addWidget(applyDistancePushButton);
 
 
-        verticalLayout_8->addLayout(horizontalLayout_15);
+        verticalLayout_9->addWidget(groupBox_2);
 
-        groupBox_2->raise();
-        refComboBox->raise();
-        label->raise();
+        groupBox_3 = new QGroupBox(SettingLocator);
+        groupBox_3->setObjectName(QStringLiteral("groupBox_3"));
+        verticalLayout_8 = new QVBoxLayout(groupBox_3);
+        verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
+        horizontalLayout_18 = new QHBoxLayout();
+        horizontalLayout_18->setObjectName(QStringLiteral("horizontalLayout_18"));
+        horizontalLayout_16 = new QHBoxLayout();
+        horizontalLayout_16->setObjectName(QStringLiteral("horizontalLayout_16"));
+        label_2 = new QLabel(groupBox_3);
+        label_2->setObjectName(QStringLiteral("label_2"));
+
+        horizontalLayout_16->addWidget(label_2);
+
+        rssi1mLineEdit = new QLineEdit(groupBox_3);
+        rssi1mLineEdit->setObjectName(QStringLiteral("rssi1mLineEdit"));
+
+        horizontalLayout_16->addWidget(rssi1mLineEdit);
+
+
+        horizontalLayout_18->addLayout(horizontalLayout_16);
+
+        horizontalSpacer_17 = new QSpacerItem(40, 20, QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+        horizontalLayout_18->addItem(horizontalSpacer_17);
+
+        horizontalLayout_17 = new QHBoxLayout();
+        horizontalLayout_17->setObjectName(QStringLiteral("horizontalLayout_17"));
+        label_5 = new QLabel(groupBox_3);
+        label_5->setObjectName(QStringLiteral("label_5"));
+
+        horizontalLayout_17->addWidget(label_5);
+
+        rssi2mLineEdit = new QLineEdit(groupBox_3);
+        rssi2mLineEdit->setObjectName(QStringLiteral("rssi2mLineEdit"));
+
+        horizontalLayout_17->addWidget(rssi2mLineEdit);
+
+
+        horizontalLayout_18->addLayout(horizontalLayout_17);
+
+
+        verticalLayout_8->addLayout(horizontalLayout_18);
+
+        applyCalibrationPushButton = new QPushButton(groupBox_3);
+        applyCalibrationPushButton->setObjectName(QStringLiteral("applyCalibrationPushButton"));
+
+        verticalLayout_8->addWidget(applyCalibrationPushButton);
+
+
+        verticalLayout_9->addWidget(groupBox_3);
+
 
         retranslateUi(SettingLocator);
 
@@ -458,8 +505,11 @@ public:
         label_25->setText(QApplication::translate("SettingLocator", "x", Q_NULLPTR));
         label_26->setText(QApplication::translate("SettingLocator", "y", Q_NULLPTR));
         label_27->setText(QApplication::translate("SettingLocator", "z", Q_NULLPTR));
-        okPushButton->setText(QApplication::translate("SettingLocator", "OK", Q_NULLPTR));
-        cancelPushButton->setText(QApplication::translate("SettingLocator", "Cancel", Q_NULLPTR));
+        applyDistancePushButton->setText(QApplication::translate("SettingLocator", "Apply", Q_NULLPTR));
+        groupBox_3->setTitle(QApplication::translate("SettingLocator", "Calibration", Q_NULLPTR));
+        label_2->setText(QApplication::translate("SettingLocator", "RSSI 1m", Q_NULLPTR));
+        label_5->setText(QApplication::translate("SettingLocator", "RSSI 2m", Q_NULLPTR));
+        applyCalibrationPushButton->setText(QApplication::translate("SettingLocator", "Apply", Q_NULLPTR));
     } // retranslateUi
 
 };

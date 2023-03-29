@@ -22,7 +22,9 @@ SOURCES += main.cpp\
     file.cpp \
     locationcalculatorprocess.cpp \
     common.cpp \
-    settinglocator.cpp
+    settinglocator.cpp \
+    adddevice.cpp \
+    coordinatesystem.cpp
 
 HEADERS  += mainwindow.h \
     tcpserver.h \
@@ -34,7 +36,11 @@ HEADERS  += mainwindow.h \
     constants.h \
     locationcalculatorprocess.h \
     common.h \
-    settinglocator.h
+    settinglocator.h \
+    adddevice.h \
+    coordinatesystem.h \
+    devicedatacontainer.h
 
 FORMS    += mainwindow.ui \
-    settinglocator.ui
+    settinglocator.ui \
+    adddevice.ui

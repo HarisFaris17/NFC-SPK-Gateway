@@ -48,6 +48,74 @@ void File::parseFile(QString &ipAddress,
     close();
 }
 
+void File::parseLocatorParams(QString &ref,
+                              QString &x1, QString &y1, QString &z1,
+                              QString &x2, QString &y2, QString &z2,
+                              QString &x3, QString &y3, QString &z3,
+                              QString &x4, QString &y4, QString &z4){
+
+    setFileName(LOCATOR_PARAMS_FILE);
+    open(ReadOnly);
+
+    if(!isOpen()){
+        qDebug() << "The locator parameters file failed to be opened";
+        return;
+    }
+
+    QByteArray savedBytes = readAll();
+    qDebug()<<"Setting locator init"<<savedBytes;
+
+    QList<QByteArray> locatorsParams = savedBytes.split('\n');
+
+    ref = QString(locatorsParams[0]);
+
+    QList<QByteArray> locator1Params = locatorsParams[1].split(',');
+    x1 = locator1Params[0];
+    y1 = locator1Params[1];
+    z1 = locator1Params[2];
+
+    QList<QByteArray> locator2Params = locatorsParams[2].split(',');
+    x2 = locator2Params[0];
+    y2 = locator2Params[1];
+    z2 = locator2Params[2];
+
+    QList<QByteArray> locator3Params = locatorsParams[3].split(',');
+    x3 = locator3Params[0];
+    y3 = locator3Params[1];
+    z3 = locator3Params[2];
+
+    QList<QByteArray> locator4Params = locatorsParams[4].split(',');
+    x4 = locator4Params[0];
+    y4 = locator4Params[1];
+    z4 = locator4Params[2];
+
+//    savedBytes += ref.toUtf8() + '\n';
+//    savedBytes += x1.toUtf8() + ',' + y1.toUtf8() + ',' + z1.toUtf8() + '\n';
+//    savedBytes += x2.toUtf8() + ',' + y2.toUtf8() + ',' + z2.toUtf8() + '\n';
+//    savedBytes += x3.toUtf8() + ',' + y3.toUtf8() + ',' + z3.toUtf8() + '\n';
+//    savedBytes += x4.toUtf8() + ',' + y4.toUtf8() + ',' + z4.toUtf8() + '\n';
+
+//    write(savedBytes);
+    close();
+}
+
+void File::parseRSSI(QString &RSSI1m, QString &RSSI2m){
+    setFileName(RSSI_FILE);
+    open(ReadOnly);
+
+    if (!isOpen()){
+        qDebug() << "The RSSI file failed to be opened";
+        return;
+    }
+
+    QByteArray savedBytes = readAll();
+    qDebug() << "RSSI file " << savedBytes;
+
+    QList<QByteArray> RSSIs = savedBytes.split('\n');
+    RSSI1m = RSSIs[0];
+    RSSI2m = RSSIs[1];
+}
+
 void File::saveDatabaseConfig(QString host, QString databasePort, QString databaseName, QString userName, QString password){
     QString ipAddressTCPServer;
     QString portTCPServer;
@@ -97,22 +165,40 @@ bool File::saveFile(QString ipAddress,
     return true;
 }
 
-bool File::saveIQ(const QString macAddress, const QByteArray dataIQ){
-    QFile file;
+bool File::saveIQ(const QString macAddress, const int &locator, const QByteArray dataIQ){
 
-    QString fileName = QDir::currentPath() + tr(AOA_IQ_FILE).arg(macAddress);
-    file.setFileName(fileName);
+    QString fileName = QDir::currentPath() + tr(AOA_IQ_FILE).arg(macAddress).arg(locator);
+    setFileName(fileName);
 
-    if (!file.open(QFile::ReadOnly | QFile::Append)){
+    if (!open(QFile::ReadOnly | QFile::Append)){
         qDebug()<<"The file failed to be opened or created" << fileName;
         return false;
     }
 
 //    QByteArray dataIQBytes = dataIQ + "\n";
     qDebug()<<"Saving IQ Data....";
-    file.write(dataIQ);
+    write(dataIQ);
     qDebug()<<dataIQ;
-    file.close();
+    close();
+
+    return true;
+}
+
+bool File::saveInstantaneousRSSI(QString RSSI, QString mac, const int &locator){
+    QString fileName = QDir::currentPath() + tr(INSTANTANEOUS_RSSI_FILE).arg(mac).arg(locator);
+    setFileName(fileName);
+
+    if (!open(QFile::ReadOnly | QFile::Append)){
+        qDebug()<<"The file failed to be opened or created" << INSTANTANEOUS_RSSI_FILE;
+        return false;
+    }
+
+    qDebug()<<"Saving Instantaneous RSSI....";
+    write(RSSI.toUtf8() + ',');
+    qDebug()<<RSSI;
+    close();
+
+    return true;
 }
 
 //bool File::parseTCPServerInfo(){
@@ -124,21 +210,170 @@ bool File::saveIQ(const QString macAddress, const QByteArray dataIQ){
 //    return retult;
 //}
 
-bool File::saveCoordinates(const QString &macAddress, const int &locator, const QByteArray &xyz){
-    QFile file;
+bool File::saveConvenientCoordinatesPerLocator(const QString &macAddress, const int &locator, const QByteArray &xyz, const QString &dataType){
+    QString fileName = QDir::currentPath() + tr(CONVENIENT_COORDINATES_PER_LOCATOR_FILE).arg(locator).arg(macAddress).arg(dataType);
+    setFileName(fileName);
 
-    QString fileName = QDir::currentPath() + tr(AOA_COORDINATES_FILE).arg(locator).arg(macAddress);
-    file.setFileName(fileName);
-
-    if (!file.open(QFile::ReadOnly | QFile::Append)){
+    if (!open(QFile::ReadOnly | QFile::Append)){
         qDebug()<<"The file failed to be opened or created" << fileName;
         return false;
     }
 
-    qDebug()<<"Saving Coordinates Data....";
-    file.write(xyz);
+    qDebug()<<"Saving Coordinates per locator Data....";
+    write(xyz);
     qDebug()<<xyz;
-    file.close();
+    close();
+
+    return true;
+}
+
+bool File::saveConvenientCoordinatesCumulative(const QString &macAddress, const QByteArray &xyz){
+    QString fileName = QDir::currentPath() + tr(CONVENIENT_COORDINATES_CUMULATIVE_FILE).arg(macAddress);
+    setFileName(fileName);
+
+    if (!open(QFile::ReadOnly | QFile::Append)){
+        qDebug()<<"The file failed to be opened or created" << fileName;
+        return false;
+    }
+
+    qDebug()<<"Saving Coordinates from cumulative data and convenient method....";
+    write(xyz);
+    qDebug()<<xyz;
+    close();
+
+    return true;
+}
+
+bool File::saveAoAAnglesPerLocator(const QString &macAddress, const int &locator, const QByteArray &angles){
+    QString fileName = QDir::currentPath() + tr(AOA_ANGLES_FILE).arg(locator).arg(macAddress);
+    setFileName(fileName);
+
+    if (!open(QFile::ReadOnly | QFile::Append)){
+        qDebug()<<"The file failed to be opened or created" << fileName;
+        return false;
+    }
+
+    qDebug()<<"Saving Angle Data....";
+    write(angles);
+    qDebug()<<angles;
+    close();
+
+    return true;
+}
+
+bool File::saveAoACoordinatesPerTwoLocators(const QString &macAddress, const int &locator1, const int &locator2, const QByteArray &xyz){
+    QString fileName = QDir::currentPath() + tr(AOA_COORD_TWO_lOCATORS_ELEMENTS_FILE).arg(locator1).arg(locator2).arg(macAddress);
+    setFileName(fileName);
+
+    if (!open(QFile::ReadOnly | QFile::Append)){
+        qDebug()<<"The file failed to be opened or created" << fileName;
+        return false;
+    }
+
+    qDebug()<<"Saving coordinates two locators Data....";
+    write(xyz);
+    qDebug()<<xyz;
+    close();
+
+    return true;
+}
+
+bool File::saveAoACoordinatesPerLocator(const QString &macAddress, const int &locator, const QByteArray &xyz)
+{
+    QString fileName = QDir::currentPath() + tr(AOA_COORD_LOCATOR_ELEMENTS_FILE).arg(locator).arg(macAddress);
+    setFileName(fileName);
+
+    if (!open(QFile::ReadOnly | QFile::Append)){
+        qDebug()<<"The file failed to be opened or created" << fileName;
+        return false;
+    }
+
+    qDebug()<<"Saving Coordinates single locator Data....";
+    write(xyz);
+    qDebug()<<xyz;
+    close();
+
+    return true;
+}
+
+bool File::saveAoACoordinatesCumulative(const QString &macAddress, const QByteArray &xyz){
+    QString fileName = QDir::currentPath() + tr(AOA_COORD_CUMULATIVE_FILE).arg(macAddress);
+    setFileName(fileName);
+
+    if (!open(QFile::ReadOnly | QFile::Append)){
+        qDebug()<<"The file failed to be opened or created" << fileName;
+        return false;
+    }
+
+    qDebug()<<"Saving AoA Cumulative Data....";
+    write(xyz);
+    qDebug()<<xyz;
+    close();
+
+    return true;
+}
+
+bool File::saveLocatorParams(int ref,
+                             QString x1, QString y1, QString z1,
+                             QString x2, QString y2, QString z2,
+                             QString x3, QString y3, QString z3,
+                             QString x4, QString y4, QString z4){
+//    QString fileName = tr();
+    setFileName(LOCATOR_PARAMS_FILE);
+
+    open(QFile::WriteOnly);
+    if(!isOpen()){
+        qDebug()<<"The locator parameters file failed to be opened";
+        return false;
+    }
+
+    qDebug()<<"Saving locator parameters configuration";
+
+    QByteArray savedString;
+    savedString += QString::number(ref) + '\n';
+    savedString += x1 + ',' + y1 + ',' + z1 + '\n';
+    savedString += x2 + ',' + y2 + ',' + z2 + '\n';
+    savedString += x3 + ',' + y3 + ',' + z3 + '\n';
+    savedString += x4 + ',' + y4 + ',' + z4;
+
+    write(savedString);
+    qDebug()<<savedString;
+    close();
+
+    return true;
+}
+
+bool File::saveRSSI(QString &RSSI1m, QString &RSSI2m){
+    QByteArray savedString;
+    savedString = RSSI1m.toUtf8() + '\n' + RSSI2m.toUtf8();
+
+    setFileName(RSSI_FILE);
+    open(WriteOnly);
+
+    if (!isOpen()){
+        qDebug() << "RSSI configuration failed to be saved";
+        return false;
+    }
+
+    write(savedString);
+    return true;
+}
+
+bool File::saveCalculatorData(const QByteArray &data){
+    QString fileName = QDir::currentPath() + tr(CALCULATOR_DATA);
+    setFileName(fileName);
+
+    open(QFile::ReadOnly | QFile::Append);
+    if (!isOpen()) {
+        qDebug() << "The file failed to be opened " << fileName;
+        return false;
+    }
+
+    qDebug () << "Saving calculator data";
+    write(data);
+    qDebug() << data;
+    close();
+
 }
 
 QByteArray File::parseData(QByteArray &data, int &index, bool &isSuccess){

@@ -1,0 +1,25 @@
+buat tsetiap pergantian tag berubah di baris yang berbeda /
+buat table baru untuk menggambarkan history data /
+tampilkan please tap in /
+sehabis done tampilkan please tap in /
+font besarkan /
+beritahu jika pn532 atau eeprom error /
+
+findout how to reset nrf52833 
+
+adakan tambahakan command CHG. /
+ssd1306 went error in the middle of program sometimes, therefore when that happens the MCU in release mode restarted but since the ssd1306 itself holds the error, hence when reinitializing the ssd1306 the error persists and the restart loops happens
+
+does the currently used ssd1306 has reset pin ?
+
+
+find the alternative for automatic positioning
+find if the locator can do duplex communication
+
+put the permissable mac to be cumulatively calculated to location_aoa_waiting_queue
+
+answer:
+sudah bisa menampilkan jika pn523 atau eeprom error
+si nrf52833 cuma bisa jadi tag, tidak bisa jadi polling device
+
+
