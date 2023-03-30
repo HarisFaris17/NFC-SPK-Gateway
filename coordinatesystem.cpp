@@ -13,9 +13,63 @@ CoordinateSystem::CoordinateSystem(QWidget *parent) : QWidget(parent)
     resize(DEFAULT_WIDTH_WINDOW_COORDINATE * screenGeometry.width(), DEFAULT_HEIGHT_WINDOW_COORDINATE * screenGeometry.height());
 //    QPainter *painter = new QPainter(this);
     setStyleSheet(tr("background-color: white"));
+
+#define COORD(locator_idx)      QString x##locator_idx; \
+                                QString y##locator_idx; \
+                                QString z##locator_idx;
+    COORD(0)
+    COORD(1)
+    COORD(2)
+    COORD(3)
+    COORD(4)
+    COORD(5)
+    COORD(6)
+    COORD(7)
+
+    File file;
+    file.parseLocatorParams(x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, x5, y5, z5, x6, y6, z6, x7, y7, z7);
+
+#define SAVE_LOCATOR_COORDINATES(locator_idx)   locatorCoordinates[locator_idx].append(x##locator_idx.toDouble()); \
+                                                locatorCoordinates[locator_idx].append(y##locator_idx.toDouble()); \
+                                                locatorCoordinates[locator_idx].append(z##locator_idx.toDouble());
+
+    SAVE_LOCATOR_COORDINATES(0)
+    SAVE_LOCATOR_COORDINATES(1)
+    SAVE_LOCATOR_COORDINATES(2)
+    SAVE_LOCATOR_COORDINATES(3)
+    SAVE_LOCATOR_COORDINATES(4)
+    SAVE_LOCATOR_COORDINATES(5)
+    SAVE_LOCATOR_COORDINATES(6)
+    SAVE_LOCATOR_COORDINATES(7)
+
 }
 
 void CoordinateSystem::updateCoord(){
+    update();
+}
+
+void CoordinateSystem::updateLocatorCoordinate(QString x0, QString y0, QString z0,
+                                               QString x1, QString y1, QString z1,
+                                               QString x2, QString y2, QString z2,
+                                               QString x3, QString y3, QString z3,
+                                               QString x4, QString y4, QString z4,
+                                               QString x5, QString y5, QString z5,
+                                               QString x6, QString y6, QString z6,
+                                               QString x7, QString y7, QString z7){
+#define DELETE_LOCATOR_COORDINATES(locator_idx) locatorCoordinates[locator_idx].clear(); \
+                                                locatorCoordinates[locator_idx].clear(); \
+                                                locatorCoordinates[locator_idx].clear();
+#define UPDATE_LOCATOR_COORDINATES(locator_idx) DELETE_LOCATOR_COORDINATES(locator_idx) \
+                                                SAVE_LOCATOR_COORDINATES(locator_idx)
+
+    UPDATE_LOCATOR_COORDINATES(0)
+    UPDATE_LOCATOR_COORDINATES(1)
+    UPDATE_LOCATOR_COORDINATES(2)
+    UPDATE_LOCATOR_COORDINATES(3)
+    UPDATE_LOCATOR_COORDINATES(4)
+    UPDATE_LOCATOR_COORDINATES(5)
+    UPDATE_LOCATOR_COORDINATES(6)
+    UPDATE_LOCATOR_COORDINATES(7)
     update();
 }
 
@@ -32,6 +86,10 @@ QPen gridPen(gridBrush, 1, Qt::DashLine );
 
 QColor cartesianColor(21,127,179,255);
 QPen cartesianPen(cartesianColor);
+
+QColor locatorColor(204, 191, 6, 255);
+QBrush locatorBrush(locatorColor);
+QPen locatorPen(locatorBrush, 1, Qt::DotLine);
 
 void CoordinateSystem::paintEvent(QPaintEvent *event){
     QScreen *screen = QGuiApplication::primaryScreen();
@@ -55,10 +113,17 @@ void CoordinateSystem::paintEvent(QPaintEvent *event){
     painter.setPen(Qt::NoPen);
     painter.drawEllipse(origin, originSize.width(), originSize.height());
 
-    painter.setBrush(beaconColor);
-    painter.setPen(beaconOutlineColor);
+    painter.setPen(locatorPen);
 
     QMap<QString, DeviceDataContainer> devices = QMap<QString, DeviceDataContainer>(*pDevices);
+
+    for (auto locatorCoord = locatorCoordinates.begin(); locatorCoord != locatorCoordinates.end(); ++locatorCoord){
+        int locator_idx = locatorCoord.key();
+        paintLocator(&painter, QPointF(locatorCoord.value()[0], locatorCoord.value()[1]), locator_idx);
+    }
+
+    painter.setBrush(beaconColor);
+    painter.setPen(beaconOutlineColor);
 
     for (auto device = devices.begin(); device != devices.end(); ++device){
         paintBeacon(&painter, device.key(), QPointF(device.value().x, device.value().y));
@@ -110,6 +175,22 @@ void CoordinateSystem::paintBeacon(QPainter *painter, QString beaconAddress, QPo
     size = fontMetrics.size(Qt::TextSingleLine, coordinate);
     rect = QRect(x - size.width()/2, y + size.height() * 0.2, size.width(), size.height());
     painter->drawText(rect, Qt::AlignCenter, coordinate);
+}
+
+void CoordinateSystem::paintLocator(QPainter *painter, QPointF locator, int locator_idx)
+{
+    float x = width()/2 * locator.x() / (WIDTH_FIELD/2);
+    float y = (-1) * height()/2 * locator.y() / (HEIGHT_FIELD/2);
+
+    painter->drawEllipse(QPointF(x,y), LOCATOR_POINT_RADIUS, LOCATOR_POINT_RADIUS);
+
+    QFont font = painter->font();
+    QFontMetrics fontMetrics = QFontMetrics(font);
+    QString locatorString = tr("Locator %1").arg(locator_idx);
+    QSize size = fontMetrics.size(Qt::TextSingleLine, locatorString);
+    QRect rect = QRect(x - size.width()/2, y + size.height() * 0.2, size.width(), size.height());
+
+    painter->drawText(rect, Qt::AlignCenter,locatorString);
 }
 
 void CoordinateSystem::paintGrid(QPainter *painter){

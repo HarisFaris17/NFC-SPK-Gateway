@@ -22,11 +22,14 @@ public:
                    QString &userName,
                    QString &password);
 
-    void parseLocatorParams(QString &ref,
+    void parseLocatorParams(QString &x0, QString &y0, QString &z0,
                             QString &x1, QString &y1, QString &z1,
                             QString &x2, QString &y2, QString &z2,
                             QString &x3, QString &y3, QString &z3,
-                            QString &x4, QString &y4, QString &z4);
+                            QString &x4, QString &y4, QString &z4,
+                            QString &x5, QString &y5, QString &z5,
+                            QString &x6, QString &y6, QString &z6,
+                            QString &x7, QString &y7, QString &z7);
 
     void parseRSSI(QString &RSSI1m, QString &RSSI2m);
 
@@ -59,11 +62,14 @@ public:
     bool saveAoACoordinatesPerLocator(const QString &macAddress, const int &locator1, const QByteArray &xyz);
     bool saveAoACoordinatesCumulative(const QString &macAddress, const QByteArray &xyz);
 
-    bool saveLocatorParams(int ref,
+    bool saveLocatorParams(QString x0, QString y0, QString z0,
                            QString x1, QString y1, QString z1,
                            QString x2, QString y2, QString z2,
                            QString x3, QString y3, QString z3,
-                           QString x4, QString y4, QString z4);
+                           QString x4, QString y4, QString z4,
+                           QString x5, QString y5, QString z5,
+                           QString x6, QString y6, QString z6,
+                           QString x7, QString y7, QString z7);
     bool saveRSSI(QString &RSSI1m, QString &RSSI2m);
 
     bool saveCalculatorData(const QByteArray &data);

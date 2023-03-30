@@ -48,11 +48,14 @@ void File::parseFile(QString &ipAddress,
     close();
 }
 
-void File::parseLocatorParams(QString &ref,
+void File::parseLocatorParams(QString &x0, QString &y0, QString &z0,
                               QString &x1, QString &y1, QString &z1,
                               QString &x2, QString &y2, QString &z2,
                               QString &x3, QString &y3, QString &z3,
-                              QString &x4, QString &y4, QString &z4){
+                              QString &x4, QString &y4, QString &z4,
+                              QString &x5, QString &y5, QString &z5,
+                              QString &x6, QString &y6, QString &z6,
+                              QString &x7, QString &y7, QString &z7){
 
     setFileName(LOCATOR_PARAMS_FILE);
     open(ReadOnly);
@@ -66,28 +69,44 @@ void File::parseLocatorParams(QString &ref,
     qDebug()<<"Setting locator init"<<savedBytes;
 
     QList<QByteArray> locatorsParams = savedBytes.split('\n');
+    qDebug()<<locatorsParams;
 
-    ref = QString(locatorsParams[0]);
+//    ref = QString(locatorsParams[0]);
+#define ASSIGN_LOCATOR_PARAMS(locator_idx)          QList<QByteArray> locator## locator_idx ##Params = locatorsParams[locator_idx].split(','); \
+                                                    x##locator_idx = locator## locator_idx ##Params[0]; \
+                                                    y##locator_idx = locator## locator_idx ##Params[1]; \
+                                                    z##locator_idx = locator## locator_idx ##Params[2]; \
+//                                                    qDebug() << tr("%1").arg(x##locator_idx);
 
-    QList<QByteArray> locator1Params = locatorsParams[1].split(',');
-    x1 = locator1Params[0];
-    y1 = locator1Params[1];
-    z1 = locator1Params[2];
+    ASSIGN_LOCATOR_PARAMS(0)
+    ASSIGN_LOCATOR_PARAMS(1)
+    ASSIGN_LOCATOR_PARAMS(2)
+    ASSIGN_LOCATOR_PARAMS(3)
+    ASSIGN_LOCATOR_PARAMS(4)
+    ASSIGN_LOCATOR_PARAMS(5)
+    ASSIGN_LOCATOR_PARAMS(6)
+    ASSIGN_LOCATOR_PARAMS(7)
 
-    QList<QByteArray> locator2Params = locatorsParams[2].split(',');
-    x2 = locator2Params[0];
-    y2 = locator2Params[1];
-    z2 = locator2Params[2];
+//    qDebug() << x0 << x1 << x2 << x3 << x4 << x5 << x6;
+//    QList<QByteArray> locator1Params = locatorsParams[1].split(',');
+//    x1 = locator1Params[0];
+//    y1 = locator1Params[1];
+//    z1 = locator1Params[2];
 
-    QList<QByteArray> locator3Params = locatorsParams[3].split(',');
-    x3 = locator3Params[0];
-    y3 = locator3Params[1];
-    z3 = locator3Params[2];
+//    QList<QByteArray> locator2Params = locatorsParams[2].split(',');
+//    x2 = locator2Params[0];
+//    y2 = locator2Params[1];
+//    z2 = locator2Params[2];
 
-    QList<QByteArray> locator4Params = locatorsParams[4].split(',');
-    x4 = locator4Params[0];
-    y4 = locator4Params[1];
-    z4 = locator4Params[2];
+//    QList<QByteArray> locator3Params = locatorsParams[3].split(',');
+//    x3 = locator3Params[0];
+//    y3 = locator3Params[1];
+//    z3 = locator3Params[2];
+
+//    QList<QByteArray> locator4Params = locatorsParams[4].split(',');
+//    x4 = locator4Params[0];
+//    y4 = locator4Params[1];
+//    z4 = locator4Params[2];
 
 //    savedBytes += ref.toUtf8() + '\n';
 //    savedBytes += x1.toUtf8() + ',' + y1.toUtf8() + ',' + z1.toUtf8() + '\n';
@@ -313,11 +332,14 @@ bool File::saveAoACoordinatesCumulative(const QString &macAddress, const QByteAr
     return true;
 }
 
-bool File::saveLocatorParams(int ref,
+bool File::saveLocatorParams(QString x0, QString y0, QString z0,
                              QString x1, QString y1, QString z1,
                              QString x2, QString y2, QString z2,
                              QString x3, QString y3, QString z3,
-                             QString x4, QString y4, QString z4){
+                             QString x4, QString y4, QString z4,
+                             QString x5, QString y5, QString z5,
+                             QString x6, QString y6, QString z6,
+                             QString x7, QString y7, QString z7){
 //    QString fileName = tr();
     setFileName(LOCATOR_PARAMS_FILE);
 
@@ -330,11 +352,20 @@ bool File::saveLocatorParams(int ref,
     qDebug()<<"Saving locator parameters configuration";
 
     QByteArray savedString;
-    savedString += QString::number(ref) + '\n';
-    savedString += x1 + ',' + y1 + ',' + z1 + '\n';
-    savedString += x2 + ',' + y2 + ',' + z2 + '\n';
-    savedString += x3 + ',' + y3 + ',' + z3 + '\n';
-    savedString += x4 + ',' + y4 + ',' + z4;
+#define ADD_LOCATOR_COORDINATE(locator_idx)    savedString += x ## locator_idx + ',' + y ## locator_idx + ',' + z1
+#define ADD_NEW_LINE  + '\n';
+//    savedString += x1 + ',' + y1 + ',' + z1 + '\n';
+//    savedString += x2 + ',' + y2 + ',' + z2 + '\n';
+//    savedString += x3 + ',' + y3 + ',' + z3 + '\n';
+    ADD_LOCATOR_COORDINATE(0) ADD_NEW_LINE
+    ADD_LOCATOR_COORDINATE(1) ADD_NEW_LINE
+    ADD_LOCATOR_COORDINATE(2) ADD_NEW_LINE
+    ADD_LOCATOR_COORDINATE(3) ADD_NEW_LINE
+    ADD_LOCATOR_COORDINATE(4) ADD_NEW_LINE
+    ADD_LOCATOR_COORDINATE(5) ADD_NEW_LINE
+    ADD_LOCATOR_COORDINATE(6) ADD_NEW_LINE
+    ADD_LOCATOR_COORDINATE(7);
+//    savedString += x4 + ',' + y4 + ',' + z4;
 
     write(savedString);
     qDebug()<<savedString;

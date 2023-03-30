@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Processor_t {
-    QByteArrayData data[56];
-    char stringdata0[515];
+    QByteArrayData data[64];
+    char stringdata0[538];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -80,11 +80,19 @@ QT_MOC_LITERAL(47, 439, 17), // "receiveRSSIConfig"
 QT_MOC_LITERAL(48, 457, 6), // "rssi1m"
 QT_MOC_LITERAL(49, 464, 6), // "rssi2m"
 QT_MOC_LITERAL(50, 471, 20), // "receiveLocatorParams"
-QT_MOC_LITERAL(51, 492, 3), // "ref"
-QT_MOC_LITERAL(52, 496, 2), // "x4"
-QT_MOC_LITERAL(53, 499, 2), // "y4"
-QT_MOC_LITERAL(54, 502, 2), // "z4"
-QT_MOC_LITERAL(55, 505, 9) // "readyRead"
+QT_MOC_LITERAL(51, 492, 2), // "x4"
+QT_MOC_LITERAL(52, 495, 2), // "y4"
+QT_MOC_LITERAL(53, 498, 2), // "z4"
+QT_MOC_LITERAL(54, 501, 2), // "x5"
+QT_MOC_LITERAL(55, 504, 2), // "y5"
+QT_MOC_LITERAL(56, 507, 2), // "z5"
+QT_MOC_LITERAL(57, 510, 2), // "x6"
+QT_MOC_LITERAL(58, 513, 2), // "y6"
+QT_MOC_LITERAL(59, 516, 2), // "z6"
+QT_MOC_LITERAL(60, 519, 2), // "x7"
+QT_MOC_LITERAL(61, 522, 2), // "y7"
+QT_MOC_LITERAL(62, 525, 2), // "z7"
+QT_MOC_LITERAL(63, 528, 9) // "readyRead"
 
     },
     "Processor\0sendData\0\0data\0sendDataTable\0"
@@ -100,8 +108,8 @@ QT_MOC_LITERAL(55, 505, 9) // "readyRead"
     "stateChanged\0QProcess::ProcessState\0"
     "state\0receiveLastStateDevice\0deviceIds\0"
     "addDeviceId\0receiveRSSIConfig\0rssi1m\0"
-    "rssi2m\0receiveLocatorParams\0ref\0x4\0"
-    "y4\0z4\0readyRead"
+    "rssi2m\0receiveLocatorParams\0x4\0y4\0z4\0"
+    "x5\0y5\0z5\0x6\0y6\0z6\0x7\0y7\0z7\0readyRead"
 };
 #undef QT_MOC_LITERAL
 
@@ -136,8 +144,8 @@ static const uint qt_meta_data_Processor[] = {
       44,    7,  191,    2, 0x0a /* Public */,
       46,    1,  206,    2, 0x0a /* Public */,
       47,    2,  209,    2, 0x0a /* Public */,
-      50,   13,  214,    2, 0x0a /* Public */,
-      55,    0,  241,    2, 0x08 /* Private */,
+      50,   24,  214,    2, 0x0a /* Public */,
+      63,    0,  263,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    3,
@@ -157,7 +165,7 @@ static const uint qt_meta_data_Processor[] = {
     QMetaType::Void, QMetaType::QStringList, QMetaType::QStringList, QMetaType::QStringList, QMetaType::QStringList, QMetaType::QStringList, QMetaType::QStringList, QMetaType::QStringList,   45,    6,    7,    8,   12,   13,   14,
     QMetaType::Void, QMetaType::QString,    5,
     QMetaType::Void, QMetaType::QString, QMetaType::QString,   48,   49,
-    QMetaType::Void, QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString,   51,   20,   21,   22,   23,   24,   25,   26,   27,   28,   52,   53,   54,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString,   17,   18,   19,   20,   21,   22,   23,   24,   25,   26,   27,   28,   51,   52,   53,   54,   55,   56,   57,   58,   59,   60,   61,   62,
     QMetaType::Void,
 
        0        // eod
@@ -184,7 +192,7 @@ void Processor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, v
         case 12: _t->receiveLastStateDevice((*reinterpret_cast< QStringList(*)>(_a[1])),(*reinterpret_cast< QStringList(*)>(_a[2])),(*reinterpret_cast< QStringList(*)>(_a[3])),(*reinterpret_cast< QStringList(*)>(_a[4])),(*reinterpret_cast< QStringList(*)>(_a[5])),(*reinterpret_cast< QStringList(*)>(_a[6])),(*reinterpret_cast< QStringList(*)>(_a[7]))); break;
         case 13: _t->addDeviceId((*reinterpret_cast< const QString(*)>(_a[1]))); break;
         case 14: _t->receiveRSSIConfig((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
-        case 15: _t->receiveLocatorParams((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4])),(*reinterpret_cast< QString(*)>(_a[5])),(*reinterpret_cast< QString(*)>(_a[6])),(*reinterpret_cast< QString(*)>(_a[7])),(*reinterpret_cast< QString(*)>(_a[8])),(*reinterpret_cast< QString(*)>(_a[9])),(*reinterpret_cast< QString(*)>(_a[10])),(*reinterpret_cast< QString(*)>(_a[11])),(*reinterpret_cast< QString(*)>(_a[12])),(*reinterpret_cast< QString(*)>(_a[13]))); break;
+        case 15: _t->receiveLocatorParams((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4])),(*reinterpret_cast< QString(*)>(_a[5])),(*reinterpret_cast< QString(*)>(_a[6])),(*reinterpret_cast< QString(*)>(_a[7])),(*reinterpret_cast< QString(*)>(_a[8])),(*reinterpret_cast< QString(*)>(_a[9])),(*reinterpret_cast< QString(*)>(_a[10])),(*reinterpret_cast< QString(*)>(_a[11])),(*reinterpret_cast< QString(*)>(_a[12])),(*reinterpret_cast< QString(*)>(_a[13])),(*reinterpret_cast< QString(*)>(_a[14])),(*reinterpret_cast< QString(*)>(_a[15])),(*reinterpret_cast< QString(*)>(_a[16])),(*reinterpret_cast< QString(*)>(_a[17])),(*reinterpret_cast< QString(*)>(_a[18])),(*reinterpret_cast< QString(*)>(_a[19])),(*reinterpret_cast< QString(*)>(_a[20])),(*reinterpret_cast< QString(*)>(_a[21])),(*reinterpret_cast< QString(*)>(_a[22])),(*reinterpret_cast< QString(*)>(_a[23])),(*reinterpret_cast< QString(*)>(_a[24]))); break;
         case 16: _t->readyRead(); break;
         default: ;
         }

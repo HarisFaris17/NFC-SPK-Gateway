@@ -63,9 +63,9 @@ try:
     locator_params_file = open(os.path.dirname(__file__) + LOCATOR_PARAMS_FILE, mode = "r")
     locator_params_raw = locator_params_file.read()
     locator_config = locator_params_raw.split("\n")
-    if (len(locator_config) == 5) :
-        locator_ref = eval(locator_config[0])
-        for locator_idx, locator_to_ref in enumerate(locator_config[1:]) :
+    if (len(locator_config) == 8) :
+        # locator_ref = eval(locator_config[0])
+        for locator_idx, locator_to_ref in enumerate(locator_config) :
             locator_coordinate_to_ref = locator_to_ref.split(",")
 
             # the locator params doesn't have 3 coordinates relative distance to reference locator
@@ -124,10 +124,13 @@ angle_buffer = {}
 # coordinates_buffer = {}
 # batch count after each locator per mac not receiving new angles
 batch_count = {}
+
 # count how many batch the angles of each mac only received by one locator
-
-
 single_locator_catched_count = {}
+
+# 
+timer_buffer = {}
+
 location_buffer_aoa = dict()
 
 
@@ -146,14 +149,16 @@ location_buffer = dict()
 
 from aoa_convenient_method import *
 
-thread_cumulative_convenient_location_calculator = Thread(target = location_cumulative_convenient_calculator, args = (location_waiting_queue, location_buffer))
-thread_cumulative_convenient_location_calculator.start()
+if CALCULATE_COORDINATES_WITH_AOA_ONLY:
+    thread_cumulative_convenient_location_calculator = Thread(target = location_cumulative_convenient_calculator, args = (location_waiting_queue, location_buffer))
+    thread_cumulative_convenient_location_calculator.start()
 
 
 ############################################################
-new_angle_convenient_queue = Queue()
-thread_convenient_location_calculator = Thread(target = location_convenient_calculator, args = (new_angle_convenient_queue, location_waiting_queue, location_buffer))
-thread_convenient_location_calculator.start()
+if CALCULATE_COORDINATES_WITH_AOA_ONLY:
+    new_angle_convenient_queue = Queue()
+    thread_convenient_location_calculator = Thread(target = location_convenient_calculator, args = (new_angle_convenient_queue, location_waiting_queue, location_buffer))
+    thread_convenient_location_calculator.start()
 
 
 ############################################################ the purpose of this function is to calculate the cumulative location of certain mac but unlike the function above, this function uses the angles not coordinates
@@ -170,14 +175,16 @@ thread_aoa_calculator_single_locator.start()
 ############################################################
 diff_phase_buffer = dict()
 mag_buffer = dict()
+new_angles_cumul_phase_diff_cumul_angle_buffer_queue = Queue()
 new_angles_to_calculated_cumul_phase_diff_per_locator_queue = Queue()
-thread_location_aoa_calculator_cumul_phase_diff_single_locator = Thread(target = location_aoa_calculator_cumul_phase_diff_single_locator, args = (new_angles_to_calculated_cumul_phase_diff_per_locator_queue, diff_phase_buffer, mag_buffer, ))
-thread_location_aoa_calculator_cumul_phase_diff_single_locator.start()
-
+if CALCULATOR_ANGLE_BUFFER == MUSIC_CALCULATOR : thread_location_aoa_calculator_cumul_phase_diff_single_locator_music = Thread(target = location_aoa_calculator_cumul_phase_diff_single_locator_music, args = (new_angles_to_calculated_cumul_phase_diff_per_locator_queue, diff_phase_buffer, mag_buffer, angle_buffer, new_angles_cumul_phase_diff_cumul_angle_buffer_queue))
+else : thread_location_aoa_calculator_cumul_phase_diff_single_locator_music = Thread(target = location_aoa_calculator_cumul_phase_diff_single_locator_music, args = (new_angles_to_calculated_cumul_phase_diff_per_locator_queue, diff_phase_buffer, mag_buffer, ))
+thread_location_aoa_calculator_cumul_phase_diff_single_locator_music.start()
 
 ############################################################
 new_angles_to_calculated_cumul_phase_diff_per_locator_esprit_queue = Queue()
-thread_location_aoa_calculator_cumul_phase_diff_single_locator_esprit = Thread(target = location_aoa_calculator_cumul_phase_diff_single_locator_esprit, args = (new_angles_to_calculated_cumul_phase_diff_per_locator_esprit_queue, diff_phase_buffer, mag_buffer, ))
+if CALCULATOR_ANGLE_BUFFER == ESPRIT_CALCULATOR : thread_location_aoa_calculator_cumul_phase_diff_single_locator_esprit = Thread(target = location_aoa_calculator_cumul_phase_diff_single_locator_esprit_extended, args = (new_angles_to_calculated_cumul_phase_diff_per_locator_esprit_queue, diff_phase_buffer, mag_buffer, angle_buffer, new_angles_cumul_phase_diff_cumul_angle_buffer_queue))
+else : thread_location_aoa_calculator_cumul_phase_diff_single_locator_esprit = Thread(target = location_aoa_calculator_cumul_phase_diff_single_locator_esprit, args = (new_angles_to_calculated_cumul_phase_diff_per_locator_esprit_queue, diff_phase_buffer, mag_buffer))
 thread_location_aoa_calculator_cumul_phase_diff_single_locator_esprit.start()
 
 ############################################################
@@ -189,6 +196,29 @@ thread_location_aoa_calculator_cumul_phase_diff_multiple_locator.start()
 new_angles_L_shaped_cumul_phase_diff = Queue()
 thread_location_aoa_calculator_L_shaped_cumul_phase_diff = Thread(target = location_aoa_calculator_L_shaped_cumul_phase_diff, args = (new_angles_L_shaped_cumul_phase_diff, diff_phase_buffer, mag_buffer))
 thread_location_aoa_calculator_L_shaped_cumul_phase_diff.start()
+
+###########################################################
+thread_location_aoa_calculator_cumul_phase_diff_cumul_angle_buffer = Thread(target = location_aoa_calculator_cumul_phase_diff_cumul_angle_buffer, args = (new_angles_cumul_phase_diff_cumul_angle_buffer_queue, angle_buffer))
+thread_location_aoa_calculator_cumul_phase_diff_cumul_angle_buffer.start()
+
+############################################################
+def delete_buffers(mac, locator_idx):
+    write_protocol_data(CMD_INFO, f"DELETINGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG {mac} {locator_idx}")
+    if mac in diff_phase_buffer.keys():
+        if locator_idx in diff_phase_buffer[mac].keys():
+            del diff_phase_buffer[mac][locator_idx]
+            del angle_buffer[mac][locator_idx]
+            del batch_count[mac][locator_idx]
+
+def new_or_update_timer(mac, locator_idx):
+    if mac in timer_buffer.keys():
+        if locator_idx in timer_buffer[mac]:
+            timer_buffer[mac][locator_idx].cancel()
+
+    timer = threading.Timer(TIMEOUT_DIFF_PHASE_DELETION, delete_buffers, args = (mac, locator_idx))
+    timer.start()
+    timer_buffer[mac][locator_idx] = timer
+
 
 music_file = open(os.path.dirname(__file__) + MUSIC_FILE, mode = "a")
 music_2_file = open(os.path.dirname(__file__) + MUSIC_2_FILE, mode = "a")
@@ -224,13 +254,13 @@ def sub_main_thread(buffered_data):
                 write_protocol_data(command = CMD_INFO, body = body_info)
 
             elif (set_type == "LOCATOR") :
-                if (len(splitted_arguments) != 7) :
+                if (len(splitted_arguments) != 10) :
                     body_error = "The arguments in SET command and LOCATOR type should be no more or less than 7"
                     write_protocol_data(command = CMD_ERROR, body = body_error)
                     continue
 
-                locator_ref = eval(splitted_arguments[2])
-                for locator_idx, locator_to_ref in enumerate(splitted_arguments[3:]) :
+                # locator_ref = eval(splitted_arguments[2])
+                for locator_idx, locator_to_ref in enumerate(splitted_arguments[2:]) :
                     locator_coordinate_to_ref = locator_to_ref.split(",")
 
                     # the locator params doesn't have 3 coordinates relative distance to reference locator
@@ -287,22 +317,22 @@ def sub_main_thread(buffered_data):
                 actual_phase_array = phase_array[NUMBER_OF_REFERENCE_IQ:]
                 actual_mag_array = mag_array[NUMBER_OF_REFERENCE_IQ:]
 
-                body_info = "Phase Array {phase_array}".format(phase_array = phase_array)
-                write_protocol_data(command = CMD_INFO, body = body_info)
+                # body_info = "Phase Array {phase_array}".format(phase_array = phase_array)
+                # write_protocol_data(command = CMD_INFO, body = body_info)
 
-                body_info = "Reference phase {reference_phase_array}".format(reference_phase_array = reference_phase_array)
-                write_protocol_data(command = CMD_INFO, body = body_info)
+                # body_info = "Reference phase {reference_phase_array}".format(reference_phase_array = reference_phase_array)
+                # write_protocol_data(command = CMD_INFO, body = body_info)
 
-                body_info = "Actual Phase array {actual_phase_array}".format(actual_phase_array = actual_phase_array)
-                write_protocol_data(command = CMD_INFO, body = body_info)
+                # body_info = "Actual Phase array {actual_phase_array}".format(actual_phase_array = actual_phase_array)
+                # write_protocol_data(command = CMD_INFO, body = body_info)
 
                 phase_diff_array = calculate_phase_diff_reference(reference_phase_array)
-                body_info = "Phase Difference Array {phase_diff_array}".format(phase_diff_array = phase_diff_array)
-                write_protocol_data(command = CMD_INFO, body = body_info)
+                # body_info = "Phase Difference Array {phase_diff_array}".format(phase_diff_array = phase_diff_array)
+                # write_protocol_data(command = CMD_INFO, body = body_info)
                 
                 phase_diff_mean = np.mean(phase_diff_array)
-                body_info = "Phase Difference Mean {phase_diff_mean}".format(phase_diff_mean = phase_diff_mean)
-                write_protocol_data(command = CMD_INFO, body = body_info)
+                # body_info = "Phase Difference Mean {phase_diff_mean}".format(phase_diff_mean = phase_diff_mean)
+                # write_protocol_data(command = CMD_INFO, body = body_info)
 
                 # diff_phase = diff_actual_to_predict_phase(phase_array, phase_diff_mean)
                 # body_info = "diff phase {diff_phase}".format(diff_phase = diff_phase)
@@ -333,115 +363,57 @@ def sub_main_thread(buffered_data):
                     mag_buffer[mac][locator_idx] = np.append(mag_buffer[mac][locator_idx], reshaped_mag, axis = 2)
 
                 freq_offset_array = calculate_freq_offset(phase_diff_array)
-                write_protocol_data(CMD_INFO, f"Frequency Offset Array {freq_offset_array}")
+                # write_protocol_data(CMD_INFO, f"Frequency Offset Array {freq_offset_array}")
 
                 freq_offset_mean = np.mean(freq_offset_array)
-                write_protocol_data(CMD_INFO, f"Frequency Offset Mean {freq_offset_mean}")
+                # write_protocol_data(CMD_INFO, f"Frequency Offset Mean {freq_offset_mean}")
 
                 freq = freq_carrier + freq_offset_mean
                 wave_length = speed_of_light / freq
                 write_protocol_data(CMD_INFO, f"Wave length {wave_length}")
-                # number_of_ant_pattern = SIZE_OF_ANT_ARRAY
-
-                # angle_elevation = np.zeros(NUM_OF_AXIS, float64)
-                # continue_to_process = True
-                # for i, ant in enumerate(switch_pattern):
-                #     diff_phase_per_ant = diff_phase[i::number_of_ant_pattern]
-
-                #     if std(diff_phase_per_ant) > 0.5 :
-                #         continue_to_process = False
-                #         error = f"The standard deviation {std(diff_phase_per_ant)} exceed maximum (0.5 rad), continue to next"
-                #         break
-
-
-                # number_of_ant_pattern = SIZE_OF_ANT_ARRAY
-
                 angle_elevation = np.zeros(NUM_OF_AXIS, float64)
                 continue_to_process = True
-                # for i, ant in enumerate(switch_pattern):
-                #     diff_phase_per_ant = diff_phase[i::number_of_ant_pattern]
-
-                #     if std(diff_phase_per_ant) > 0.5 :
-                #         continue_to_process = False
-                #         error = f"The standard deviation {std(diff_phase_per_ant)} exceed maximum (0.5 rad), continue to next"
-                #         break
-
-                    
-                #     if (CALCULATE_ANGLE_WITH_MUSIC):
-                #         steering = np.zeros((2, len(diff_phase_per_ant)), dtype = complex)
-                #         # representing array reference, which means has a distance 0 to reference
-                #         steering[0, :] = [np.exp(1j * 0) for i in range(steering.shape[1])]
-                #         steering[1, :] = [np.exp(1j * diff_phase_element) for diff_phase_element in diff_phase_per_ant]
-                #         calculated_angle = calculate_angle_music(steering, wave_length)
-                #         body_info = "Calculated Angle using MUSIC method\naxis = {axis}\nangle = {calculated_angle}".format(axis = "X" if i == 0 else "Y", calculated_angle = calculated_angle)
-                #         write_protocol_data(command = CMD_INFO, body = body_info)
-
-                #         angle_elevation[i] = calculated_angle
-
-                #     else:
-                #         calculated_angle = calculate_angle(diff_phase_per_ant, wave_length)
-                #         calculated_angle_mean = np.mean(calculated_angle)
-                #         calculated_angle_mean_deg = np.rad2deg(calculated_angle_mean)
-
-                #         body_info = f"Calculated Angle using convenient method\nLocator {locator_idx} mac {mac} axis = {'X' if i == 0 else 'Y'}\ncalculated angle array {calculated_angle}\nmean angle {calculated_angle_mean}\nmean angle in degree {calculated_angle_mean_deg}"
-                #         write_protocol_data(command = CMD_INFO, body = body_info)
-
-                #         if isnan(calculated_angle_mean)  : 
-                #             continue_to_process = False
-                #             error = "The mean is NaN"
-                #             break
-
-                #         angle_elevation[i] = calculated_angle_mean
                 
-                # if not continue_to_process : 
-                #     write_protocol_data(command = CMD_ERROR, body = error)
-                #     continue
                 angle_elevation_music = np.zeros(NUM_OF_AXIS, float64)
                 angle_elevation_music_smoothing = np.zeros(NUM_OF_AXIS, float64)
                 num_iq_sets_per_axis_per_array = diff_phase.shape[2]
 
-                for axis in range(NUM_OF_AXIS):
-                    diff_phase_per_axis = diff_phase[axis]
-                    reshaped_mag_per_axis = reshaped_mag[axis]
+                if not CALCULATE_ONLY_CUMUL_PHASE_DIFF:
+                    for axis in range(NUM_OF_AXIS):
+                        diff_phase_per_axis = diff_phase[axis]
+                        reshaped_mag_per_axis = reshaped_mag[axis]
 
-                    
-                    if (CALCULATE_ANGLE_WITH_MUSIC):
-                        steering = np.zeros((SIZE_OF_ANT_ARRAY, num_iq_sets_per_axis_per_array), dtype = complex)
-                        steering_2 = np.zeros((SIZE_OF_ANT_ARRAY, num_iq_sets_per_axis_per_array), dtype = complex)
+                        received_data = np.zeros((SIZE_OF_ANT_ARRAY, num_iq_sets_per_axis_per_array), dtype = complex)
+                        received_data_2 = np.zeros((SIZE_OF_ANT_ARRAY, num_iq_sets_per_axis_per_array), dtype = complex)
                         
                         # representing phase difference to antenna reference, which means has a phaes difference 0 to reference
                         for ant in range(SIZE_OF_ANT_ARRAY):
-                            steering[ant, :] = [np.exp(1j * diff_phase_element) for diff_phase_element in diff_phase_per_axis[ant]]
-                            steering_2[ant, :] = [mag_element * np.exp(1j * diff_phase_element) for mag_element, diff_phase_element in zip(reshaped_mag_per_axis[ant], diff_phase_per_axis[ant])]
+                            received_data[ant, :] = [np.exp(1j * diff_phase_element) for diff_phase_element in diff_phase_per_axis[ant]]
+                            received_data_2[ant, :] = [mag_element * np.exp(1j * diff_phase_element) for mag_element, diff_phase_element in zip(reshaped_mag_per_axis[ant], diff_phase_per_axis[ant])]
 
                         # if MUSIC_WITH_SPATIAL_SMOOTHING:
-                        # calculated_angle = calculate_angle_music_spatial_smoothing(steering, wave_length)
-                        calculated_angle_music_smoothing = calculate_angle_music_spatial_smoothing(steering, wave_length, axis)
+                        # calculated_angle = calculate_angle_music_spatial_smoothing(received_data, wave_length)
+                        calculated_angle_music_smoothing = calculate_angle_music_spatial_smoothing(received_data, wave_length, axis)
 
                         if calculated_angle_music_smoothing == -1 : 
                             # write_protocol_data(CMD_INFO, f"Calculated angle using Spatial Smoothing MUSIC algorith {calculated_angle}")
+                            error = "Failed to calculate music smoothing"
+                            continue_to_process = False
                             break
                         
                             
-                        calculated_angle_esprit = calculate_angle_tls_esprit(steering_2, wave_length, axis)
+                        calculated_angle_esprit = calculate_angle_tls_esprit(received_data_2, wave_length, axis)
                         write_protocol_data(CMD_INFO, f"ESPRIT axis {'X' if axis == 0 else 'Y'} : {calculated_angle_esprit}")
                         # else :
-                        # calculated_angle = calculate_angle_music(steering, wave_length)
-                        calculated_angle_music = calculate_angle_music(steering, wave_length)
-                        calculated_angle_music_2 = calculate_angle_music(steering_2, wave_length)
+                        # calculated_angle = calculate_angle_music(received_data, wave_length)
+                        calculated_angle_music = calculate_angle_music(received_data, wave_length)
+                        calculated_angle_music_2 = calculate_angle_music(received_data_2, wave_length)
                         write_protocol_data(CMD_INFO, f"Music 2 : {calculated_angle_music_2}")
                         print(f"Axis {axis} : {calculated_angle_music_2}", file = music_2_file, flush = True)
                         if calculated_angle_music == -1 : 
                             break
                             # write_protocol_data(CMD_INFO, f"Calculated angle using Spatial Smoothing MUSIC algorith {calculated_angle}")
                         angle_elevation_music[axis] = calculated_angle_music
-
-                        # calculated_angle_root_music = calculate_angle_root_music(steering, wave_length, axis)
-
-
-                        # body_info = "Calculated Angle using MUSIC method\naxis = {axis}\nangle = {calculated_angle}".format(axis = "X" if axis == 0 else "Y", calculated_angle = calculated_angle)
-                        # write_protocol_data(command = CMD_INFO, body = body_info)
-                        # print(f"{calculated_angle}", file = music_file, flush= True)
 
                         calculated_angle = calculated_angle_music
                         if calculated_angle <= 0.1 or calculated_angle >= np.pi - 0.1:
@@ -459,78 +431,84 @@ def sub_main_thread(buffered_data):
                         angle_elevation[axis] = calculated_angle
                         angle_elevation_music_smoothing[axis] = calculated_angle_music_smoothing
 
-                    else:
-                        calculated_angle = calculate_angle(diff_phase_per_ant, wave_length)
-                        calculated_angle_mean = np.mean(calculated_angle)
-                        calculated_angle_mean_deg = np.rad2deg(calculated_angle_mean)
+                    print(f"{angle_elevation_music}", file = music_file, flush= True)
+                    print(f"{angle_elevation_music_smoothing}", file = music_smoothing_file, flush= True)
+                    
+                    if not continue_to_process : 
+                        write_protocol_data(command = CMD_ERROR, body = error)
+                        continue
 
-                        body_info = f"Calculated Angle using convenient method\nLocator {locator_idx} mac {mac} axis = {'X' if i == 0 else 'Y'}\ncalculated angle array {calculated_angle}\nmean angle {calculated_angle_mean}\nmean angle in degree {calculated_angle_mean_deg}"
-                        write_protocol_data(command = CMD_INFO, body = body_info)
+                    write_protocol_data(CMD_INFO, f"Angle elevation of mac {mac} in locator {locator_idx} in rad is {angle_elevation}")
+                    write_protocol_data(CMD_OK, BODY_AOA_ANGLES.format(mac = mac, ar1_idx = locator_idx, angle_x = angle_elevation[0], angle_y = angle_elevation[1]))
 
-                        if isnan(calculated_angle_mean)  : 
-                            continue_to_process = False
-                            error = "The mean is NaN"
-                            break
+                    determiner_value = (sin(angle_elevation[1]) - cos(angle_elevation[0])) * (sin(angle_elevation[1]) + cos(angle_elevation[0]))
+                    if (determiner_value < 0) : continue
 
-                        angle_elevation[i] = calculated_angle_mean
+                    if mac not in angle_buffer:
+                        angle_buffer[mac] = {}
+                    
+                    if locator_idx not in angle_buffer[mac].keys():
+                        angle_buffer[mac][locator_idx] = []
 
-                print(f"{angle_elevation_music}", file = music_file, flush= True)
-                print(f"{angle_elevation_music_smoothing}", file = music_smoothing_file, flush= True)
-                
-                if not continue_to_process : 
-                    write_protocol_data(command = CMD_ERROR, body = error)
-                    continue
+                    if (len(angle_buffer[mac][locator_idx]) > MAX_ANGLES_PER_MAC_PER_LOCATOR):
+                        angle_buffer[mac][locator_idx].pop(0)
 
-                write_protocol_data(CMD_INFO, f"Angle elevation of mac {mac} in locator {locator_idx} in rad is {angle_elevation}")
-                write_protocol_data(CMD_OK, BODY_AOA_ANGLES.format(mac = mac, ar1_idx = locator_idx, angle_x = angle_elevation[0], angle_y = angle_elevation[1]))
-                # if mac not in angle_buffer_queue:
-                #     angle_buffer_queue[mac] = {}
-                
-                # if locator_idx not in angle_buffer_queue[mac].keys():
-                #     angle_buffer_queue[mac][locator_idx] = []
+                    angle_buffer[mac][locator_idx].append(angle_elevation.copy())
+                    write_protocol_data(CMD_INFO, f"Angle buffer {angle_buffer}")
 
-                # angle_buffer_queue[mac][locator_idx].append(angle_elevation.copy())
-                # write_protocol_data(CMD_INFO, f"Angle buffer queue element {angle_buffer_queue}")
+                # current_state = filter_with_kalman(mac, locator_idx, angle_elevation)
+                # write_protocol_data(CMD_INFO, f"Current state of mac {mac} and locator {locator_idx} is {current_state}")
+                    if CALCULATE_COORDINATES_WITH_AOA_ONLY:
+                        continue
+                    
 
-                determiner_value = (sin(angle_elevation[1]) - cos(angle_elevation[0])) * (sin(angle_elevation[1]) + cos(angle_elevation[0]))
-                if (determiner_value < 0) : continue
+                    new_angle_convenient["distance"] = distance
+                    new_angle_convenient["angle"] = angle_elevation
+                    new_angle_convenient["mac"] = mac
+                    new_angle_convenient["locator_idx"] = locator_idx
 
-                if mac not in angle_buffer:
-                    angle_buffer[mac] = {}
-                
-                if locator_idx not in angle_buffer[mac].keys():
-                    angle_buffer[mac][locator_idx] = []
-
-                if (len(angle_buffer[mac][locator_idx]) > MAX_ANGLES_PER_MAC_PER_LOCATOR):
-                    angle_buffer[mac][locator_idx].pop(0)
-
-                angle_buffer[mac][locator_idx].append(angle_elevation.copy())
-                write_protocol_data(CMD_INFO, f"Angle buffer {angle_buffer}")
-
-                if mac not in new_angle_queue:
-                    # set (himpunan in bahasa) all the locator that involved in catching certain mac in this batch
-                    new_angle_queue[mac] = set()
-
-                new_angle_queue[mac].add(locator_idx)
-                current_state = filter_with_kalman(mac, locator_idx, angle_elevation)
-                write_protocol_data(CMD_INFO, f"Current state of mac {mac} and locator {locator_idx} is {current_state}")
-                if CALCULATE_COORDINATES_WITH_AOA_ONLY:
-                    continue
-                
-                new_angle_convenient["distance"] = distance
-                new_angle_convenient["angle"] = angle_elevation
-                new_angle_convenient["mac"] = mac
-                new_angle_convenient["locator_idx"] = locator_idx
-
-                new_angle_convenient_queue.put(new_angle_convenient)
+                    new_angle_convenient_queue.put(new_angle_convenient)
 
 
-            duplicate = new_angle_queue.copy()
-            duplicate2 = new_angle_queue.copy()
+            if mac not in new_angle_queue:
+                # set (himpunan in bahasa) all the locator that involved in catching certain mac in this batch
+                new_angle_queue[mac] = set()
+            new_angle_queue[mac].add(locator_idx)
+
+            for mac in batch_count.keys():
+                for locator_idx in batch_count[mac].keys():
+                    batch_count[mac][locator_idx] += 1
+
+            for (mac, locator_idx_set) in new_angle_queue.items():
+                if mac not in batch_count: 
+                    batch_count[mac] = {}
+                    timer_buffer[mac] = {}
+                for locator_idx in locator_idx_set:
+                    batch_count[mac][locator_idx] = 0
+                    new_or_update_timer(mac, locator_idx)
+                # else:
+                #     batch_count[mac] = {locator_idx : 0 for locator_idx in locator_idx_set}
+
+            list_delete = {}
+            for mac in batch_count.keys():
+                for locator_idx in batch_count[mac].keys():
+                    if batch_count[mac][locator_idx] >= MAX_BATCH_COUNT_TO_RESET:
+                        if mac not in list_delete:
+                            list_delete[mac] = []
+                        list_delete[mac].append(locator_idx)
+            
+            for mac in list_delete:
+                for locator_idx in list_delete[mac]:
+                    del batch_count[mac][locator_idx]
+                    del angle_buffer[mac][locator_idx]
+                    del diff_phase_buffer[mac][locator_idx]
+
+            write_protocol_data(CMD_INFO, f"Current angle buffer {angle_buffer}, current batch count {batch_count}")
             write_protocol_data(CMD_INFO, f"New angle from {new_angle_queue}")
-            new_angles_from_waiting_per_batch_queue.put(new_angle_queue) 
-            new_angles_to_calculated_cumul_phase_diff_per_locator_queue.put(duplicate)
-            new_angles_to_calculated_cumul_phase_diff_per_locator_esprit_queue.put(duplicate2)     
+
+            # new_angles_from_waiting_per_batch_queue.put(new_angle_queue) 
+            new_angles_to_calculated_cumul_phase_diff_per_locator_queue.put(new_angle_queue)
+            new_angles_to_calculated_cumul_phase_diff_per_locator_esprit_queue.put(new_angle_queue)     
             new_angles_cumul_phase_diff_multiple_locator_queue.put(new_angle_queue) 
             new_angles_L_shaped_cumul_phase_diff.put(new_angle_queue)
 

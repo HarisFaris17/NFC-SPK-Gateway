@@ -679,25 +679,32 @@ void Processor::receiveRSSIConfig(QString rssi1m, QString rssi2m){
     file.saveRSSI(rssi1m, rssi2m);
 }
 
-void Processor::receiveLocatorParams(int ref,
+void Processor::receiveLocatorParams(QString x0, QString y0, QString z0,
                                      QString x1, QString y1, QString z1,
                                      QString x2, QString y2, QString z2,
                                      QString x3, QString y3, QString z3,
-                                     QString x4, QString y4, QString z4){
+                                     QString x4, QString y4, QString z4,
+                                     QString x5, QString y5, QString z5,
+                                     QString x6, QString y6, QString z6,
+                                     QString x7, QString y7, QString z7){
     QByteArray setLocatorParams;
-    setLocatorParams += tr("%1 %2 %3 %4,%5,%6 %7,%8,%9 %10,%11,%12 %13,%14,%15").arg(COMMAND_SET).arg(SET_LOCATOR_PARAMS_TYPE)
-                                                                                .arg(ref)
+    setLocatorParams += tr("%1 %2 %4,%5,%6 %7,%8,%9 %10,%11,%12 %13,%14,%15 %16,%17,%18 %19,%20,%21 %22,%23,%24 %25,%26,%27").arg(COMMAND_SET).arg(SET_LOCATOR_PARAMS_TYPE)
+                                                                                .arg(x0).arg(y0).arg(z0)
                                                                                 .arg(x1).arg(y1).arg(z1)
                                                                                 .arg(x2).arg(y2).arg(z2)
                                                                                 .arg(x3).arg(y3).arg(z3)
-                                                                                .arg(x4).arg(y4).arg(z4).toUtf8() + '\n';
+                                                                                .arg(x4).arg(y4).arg(z4)
+                                                                                .arg(x5).arg(y5).arg(z5)
+                                                                                .arg(x6).arg(y6).arg(z6)
+                                                                                .arg(x7).arg(y7).arg(z7)
+                                                                                .toUtf8() + '\n';
 
     qDebug() << "Locator parameters config" << setLocatorParams;
 
     locationCalculatorProcessor->write(setLocatorParams);
 
     File file;
-    file.saveLocatorParams(ref, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
+    file.saveLocatorParams(x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, x5, y5, z5, x6, y6, z6, x7, y7, z7);
 }
 
 void Processor::errorOccured(QProcess::ProcessError error){

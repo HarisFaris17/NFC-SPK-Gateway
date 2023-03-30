@@ -95,3 +95,15 @@ def check_if_coord_make_sense(locator_idx1, locator_idx2, x1, x2, y1, y2):
 def tweak_angle(angle, recipro_scaler = 6):
     deviation = angle - np.pi / 2
     return angle + (-1) * ((deviation))**2 / recipro_scaler * ((deviation) / np.abs(deviation))
+
+def append_angle_to_angle_buffer(angle_buffer : dict, angle, locator_idx, mac):
+    if mac not in angle_buffer:
+        angle_buffer[mac] = {}
+
+    if locator_idx not in angle_buffer[mac].keys():
+        angle_buffer[mac][locator_idx] = []
+
+    if (len(angle_buffer[mac][locator_idx]) > MAX_ANGLES_PER_MAC_PER_LOCATOR):
+        angle_buffer[mac][locator_idx].pop(0)
+
+    angle_buffer[mac][locator_idx].append(angle.copy())

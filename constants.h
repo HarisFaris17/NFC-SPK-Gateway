@@ -46,6 +46,7 @@
 #define MINIMUM_HEIGHT_WINDOW_COORDINATE                0.7
 
 #define BEACON_POINT_RADIUS                             5
+#define LOCATOR_POINT_RADIUS                            4
 
 #define GRID_Y_SIZE                                     10
 #define GRID_X_SIZE                                     20

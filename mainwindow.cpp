@@ -536,6 +536,7 @@ void MainWindow::showSettingLocator(){
 
     connect(settingLocatorUi, &SettingLocator::sendRSSI, processor, &Processor::receiveRSSIConfig);
     connect(settingLocatorUi, &SettingLocator::sendLocatorParams, processor, &Processor::receiveLocatorParams);
+    if (coordinateSystem) connect(settingLocatorUi, &SettingLocator::sendLocatorParams, coordinateSystem, &CoordinateSystem::updateLocatorCoordinate);
     connect(settingLocatorUi, &SettingLocator::destroyed, this, &MainWindow::resetSettingLocator);
 
     settingLocatorUi->show();
@@ -570,6 +571,8 @@ void MainWindow::showCoordinates()
 
     connect(coordinateSystem, &CoordinateSystem::destroyed, this, &MainWindow::resetCoordinate);
     connect(processor, &Processor::updateCoord, coordinateSystem, &CoordinateSystem::updateCoord);
+//    if (!settingLocatorUi) connect(settingLocatorUi &SettingLocator::sendLocatorParams, coordinateSystem, &CoordinateSystem::updateLocatorCoordinate);
+    if (settingLocatorUi) connect(settingLocatorUi, &SettingLocator::sendLocatorParams, coordinateSystem, &CoordinateSystem::updateLocatorCoordinate);
 
     coordinateSystem->receiveCoordinate(processor->getDeviceDataBuffer());
     coordinateSystem->show();

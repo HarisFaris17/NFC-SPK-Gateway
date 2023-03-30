@@ -1320,9 +1320,9 @@ debug/moc_adddevice.cpp: ../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets
 
 debug/moc_coordinatesystem.cpp: constants.h \
 		devicedatacontainer.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QWidget \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qwidget.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtGui/qwindowdefs.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QString \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstring.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qchar.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qglobal.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qconfig.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qfeatures.h \
@@ -1352,17 +1352,18 @@ debug/moc_coordinatesystem.cpp: constants.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qmutex.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qnumeric.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qversiontagging.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobjectdefs.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qbytearray.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qrefcount.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qnamespace.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qarraydata.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstringbuilder.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QWidget \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qwidget.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtGui/qwindowdefs.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobjectdefs.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobjectdefs_impl.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtGui/qwindowdefs_win.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobject.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstring.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qchar.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qbytearray.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qrefcount.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qarraydata.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstringbuilder.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qlist.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qalgorithms.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qiterator.h \
@@ -1449,6 +1450,7 @@ debug/moc_coordinatesystem.cpp: constants.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QPoint \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtGui/QBrush \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QMap \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QDebug \
 		coordinatesystem.h
 	C:\Qt5\Qt5.6.3\5.6.3\mingw49_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/mkspecs/win32-g++ -I"C:/Project/Qt/NFC SPK" -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtGui -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtANGLE -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtNetwork -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtSql -IC:/Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore coordinatesystem.h -o debug\moc_coordinatesystem.cpp
 
@@ -3061,9 +3063,9 @@ debug/adddevice.o: adddevice.cpp adddevice.h \
 debug/coordinatesystem.o: coordinatesystem.cpp coordinatesystem.h \
 		constants.h \
 		devicedatacontainer.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QWidget \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qwidget.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtGui/qwindowdefs.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QString \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstring.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qchar.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qglobal.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qconfig.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qfeatures.h \
@@ -3093,17 +3095,18 @@ debug/coordinatesystem.o: coordinatesystem.cpp coordinatesystem.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qmutex.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qnumeric.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qversiontagging.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobjectdefs.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qbytearray.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qrefcount.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qnamespace.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qarraydata.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstringbuilder.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/QWidget \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtWidgets/qwidget.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtGui/qwindowdefs.h \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobjectdefs.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobjectdefs_impl.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtGui/qwindowdefs_win.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qobject.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstring.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qchar.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qbytearray.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qrefcount.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qarraydata.h \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qstringbuilder.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qlist.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qalgorithms.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/qiterator.h \
@@ -3189,7 +3192,8 @@ debug/coordinatesystem.o: coordinatesystem.cpp coordinatesystem.h \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QPointF \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QPoint \
 		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtGui/QBrush \
-		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QMap
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QMap \
+		../../../Qt5/Qt5.6.3/5.6.3/mingw49_32/include/QtCore/QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\coordinatesystem.o coordinatesystem.cpp
 
 debug/moc_mainwindow.o: debug/moc_mainwindow.cpp 
