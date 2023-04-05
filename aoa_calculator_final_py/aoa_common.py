@@ -92,8 +92,8 @@ def check_if_coord_make_sense(locator_idx1, locator_idx2, x1, x2, y1, y2):
             else : return True
 
 
-def tweak_angle(angle, recipro_scaler = 6):
-    deviation = angle - np.pi / 2
+def tweak_angle(angle, recipro_scaler = 6, ref = np.pi / 2):
+    deviation = angle - ref
     return angle + (-1) * ((deviation))**2 / recipro_scaler * ((deviation) / np.abs(deviation))
 
 def append_angle_to_angle_buffer(angle_buffer : dict, angle, locator_idx, mac):

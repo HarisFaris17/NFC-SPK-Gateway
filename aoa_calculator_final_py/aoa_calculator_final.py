@@ -177,7 +177,7 @@ diff_phase_buffer = dict()
 mag_buffer = dict()
 new_angles_cumul_phase_diff_cumul_angle_buffer_queue = Queue()
 new_angles_to_calculated_cumul_phase_diff_per_locator_queue = Queue()
-if CALCULATOR_ANGLE_BUFFER == MUSIC_CALCULATOR : thread_location_aoa_calculator_cumul_phase_diff_single_locator_music = Thread(target = location_aoa_calculator_cumul_phase_diff_single_locator_music, args = (new_angles_to_calculated_cumul_phase_diff_per_locator_queue, diff_phase_buffer, mag_buffer, angle_buffer, new_angles_cumul_phase_diff_cumul_angle_buffer_queue))
+if CALCULATOR_ANGLE_BUFFER == MUSIC_CALCULATOR : thread_location_aoa_calculator_cumul_phase_diff_single_locator_music = Thread(target = location_aoa_calculator_cumul_phase_diff_single_locator_music_extended, args = (new_angles_to_calculated_cumul_phase_diff_per_locator_queue, diff_phase_buffer, mag_buffer, angle_buffer, new_angles_cumul_phase_diff_cumul_angle_buffer_queue))
 else : thread_location_aoa_calculator_cumul_phase_diff_single_locator_music = Thread(target = location_aoa_calculator_cumul_phase_diff_single_locator_music, args = (new_angles_to_calculated_cumul_phase_diff_per_locator_queue, diff_phase_buffer, mag_buffer, ))
 thread_location_aoa_calculator_cumul_phase_diff_single_locator_music.start()
 

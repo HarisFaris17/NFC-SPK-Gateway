@@ -12,8 +12,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    qDebug()<<"adsfasdfasdf";
     ui->setupUi(this);
+
+    setAttribute(Qt::WA_DeleteOnClose);
 
     connectTCPPushButton = ui->connectTCPPushButton;
     connectDatabasePushButton = ui->connectDatabasePushButton;
@@ -771,6 +772,11 @@ void MainWindow::changeRowItem(int row,
 void MainWindow::closeEvent(QCloseEvent *closeEvent){
     if (settingLocatorUi) settingLocatorUi->close();
     delete settingLocatorUi;
+
+    if (coordinateSystem) coordinateSystem->close();
+    delete coordinateSystem;
+
+    if (processor) processor->deleteLater();
 
     closeEvent->accept();
 }

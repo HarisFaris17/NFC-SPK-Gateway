@@ -12,6 +12,7 @@ from numpy import std, cos, sin, sqrt, absolute, arccos, log, float64, pi
 
 from aoa_constants import *
 from aoa_communication import *
+from aoa_common import *
 
 # protect the phase so that it is in range [-pi, pi]
 # in this scenario it is not possible that between two phase difference more than pi, since that will represent undersampling (F_SAMPLING < 1/2 Freq), hence we don't have to consider it
@@ -189,9 +190,9 @@ def calculate_angle(diff_phase_per_ant_array : ndarray, wave_length):
 
 # def calculate_distance(rssi):
 #     return 10**((RSSI_1M - rssi)/R)
-def calculate_angle_music(steering, wave_length):
+def calculate_angle_music(received_data, wave_length):
     # calculating spatial correlation matrix
-    R = corr_matrix_estimate(steering.T, imp = "fast")
+    R = corr_matrix_estimate(received_data.T, imp = "fast")
 
     # this is an array that contains the distance per ant in desired axis to the reference (ANT_11 in this case). per axis we only consider two antena, which are ANT_11 and ANT_12 for X axis and ANT_11 and ANT_10 for Y axis. ANT_19 has a distance of dx to the reference ANT_11 in X axis and ANT_11 has a distance of dy to the reference ANT_11. But since dx is equal to dy, hence we can only assign the dx to the array
     ant_alignment = np.array([0 * dx, 1 * dx])
@@ -212,9 +213,9 @@ def calculate_angle_music(steering, wave_length):
     # print(np.max(np.abs(power_distribution)))
     return np.deg2rad(90.0 - calculated_angle)
 
-def calculate_angle_music(steering, wave_length):
+def calculate_angle_music(received_data, wave_length):
     # calculating spatial correlation matrix
-    R = corr_matrix_estimate(steering.T, imp = "fast")
+    R = corr_matrix_estimate(received_data.T, imp = "fast")
 
 
     # this is an array that contains the distance per ant in desired axis to the reference (ANT_11 in this case). per axis we only consider two antena, which are ANT_11 and ANT_12 for X axis and ANT_11 and ANT_10 for Y axis. ANT_19 has a distance of dx to the reference ANT_11 in X axis and ANT_11 has a distance of dy to the reference ANT_11. But since dx is equal to dy, hence we can only assign the dx to the array
@@ -285,8 +286,8 @@ def calculate_angle_L_shaped_music(received_data, wave_length):
     return np.array([angle_x, angle_y], dtype = float64)
 
 
-def calculate_angle_music_spatial_smoothing(steering, wave_length, axis):
-    R = spatial_smoothing(steering.T, SIZE_OF_SUBARRAY, direction = "forward-backward")
+def calculate_angle_music_spatial_smoothing(received_data, wave_length, signal_dimension = 1):
+    R = spatial_smoothing(received_data.T, SIZE_OF_SUBARRAY, direction = "forward-backward")
 
     write_protocol_data(CMD_INFO, f"The correlation matrix {R}")
 
@@ -297,7 +298,7 @@ def calculate_angle_music_spatial_smoothing(steering, wave_length, axis):
     for i in range(incident_angle.shape[0]):
         scanning_vectors[:, i] = np.exp(ant_alignment * 1j * 2 * pi * sin(np.deg2rad(incident_angle[i])) / wave_length )
 
-    power_distribution = DOA_MUSIC(R, scanning_vectors, signal_dimension = 1)
+    power_distribution = DOA_MUSIC(R, scanning_vectors, signal_dimension = signal_dimension)
     if type(power_distribution) == tuple : 
         write_protocol_data(CMD_INFO, f"Power distribution failed to be calculated")
         return -1
@@ -309,44 +310,49 @@ def calculate_angle_music_spatial_smoothing(steering, wave_length, axis):
     # index_normal_largest_power = np.argpartition(normal_power, -1 * 10)[-1 * 10 :]
     index_largest_peak_power = argrelextrema(normal_power, np.greater)
     largest_power_angles = incident_angle[index_largest_peak_power]
-    music_multiple_angles = open(os.path.dirname(__file__) + MUSIC_MULTIPLE_ANGLE_FILE, mode = "a")
-    music_multiple_angles.write(f"axis {axis} {largest_power_angles}\n")
+    # music_multiple_angles = open(os.path.dirname(__file__) + MUSIC_MULTIPLE_ANGLE_FILE, mode = "a")
+    # music_multiple_angles.write(f"axis {axis} {largest_power_angles}\n")
     try:
         calculated_angle = float(incident_angle[np.where(normal_power == 1)[0]][0])
     except:
         return -1
     # print(np.max(np.abs(power_distribution)))
-    music_multiple_angles.close()
+    # music_multiple_angles.close()
     return np.deg2rad(90.0 - calculated_angle)
 
-def calculate_angle_esprit(steering, wave_length, axis):
-    R = corr_matrix_estimate(steering.T, imp = "fast")
-    calculated_angle, eigen_values = DOA_LS_ESPRIT(R, 1, wave_length)
+def calculate_angle_esprit(received_data, wave_length, signal_dimension = 1):
+    R = corr_matrix_estimate(received_data.T, imp = "fast")
+    calculated_angle, eigen_values = DOA_LS_ESPRIT(R, signal_dimension, wave_length)
     # calculated_angle, eigen_values = DOA_ESPRIT(R, 1, wave_length)
 
-    esprit_file = open(os.path.dirname(__file__) + ESPRIT_ANGLE_FILE, mode = "a")
-    esprit_file.write(f"axis {axis} {calculated_angle}, eigen_values {eigen_values}\n")
-    esprit_file.close()
+    # esprit_file = open(os.path.dirname(__file__) + ESPRIT_ANGLE_FILE, mode = "a")
+    # esprit_file.write(f"axis {axis} {calculated_angle}, eigen_values {eigen_values}\n")
+    # esprit_file.close()
 
     return calculated_angle
 
-def calculate_angle_tls_esprit(steering, wave_length, axis):
-    steering_t = steering.T
-    R = corr_matrix_estimate(steering_t, imp = "fast")
-    # R_11 = corr_matrix_estimate(steering_t[:, :-1], imp = "fast")
-    # R_22 = corr_matrix_estimate(steering_t[:, 1:], imp = "fast")
-    # write_protocol_data(CMD_INFO, f"Received data shape {steering.shape}, R11 {R_11}, R22 {R_22}")
+def calculate_angle_tls_esprit(received_data, wave_length, signal_dimension = 1):
+    received_data_t = received_data.T
+    R = corr_matrix_estimate(received_data_t, imp = "fast")
+    R = spatial_smoothing(received_data.T, 3, direction = "forward-backward")
+    # R_11 = corr_matrix_estimate(received_data_t[:, :-1], imp = "fast")
+    # R_22 = corr_matrix_estimate(received_data_t[:, 1:], imp = "fast")
+    # write_protocol_data(CMD_INFO, f"Received data shape {received_data.shape}, R11 {R_11}, R22 {R_22}")
     # calculated_angle = DOA_TLS_ESPRIT_2(R_11, R_22, 1, wave_length)
-    calculated_angle = DOA_TLS_ESPRIT_3(R, 1, wave_length)
-    # calculated_angle = DOA_TLS_ESPRIT(steering_t, 1, wave_length)
-    tls_esprit_file = open(os.path.dirname(__file__) + TLS_ESPRIT_ANGLE_FILE, mode = "a")
-    tls_esprit_file.write(f"axis {axis} {calculated_angle}\n")
-    tls_esprit_file.close()
+    # num_of_signals = count_num_of_signals_mdl(R, received_data.shape[1])
+    # num_of_signals = estimate_sig_dim(R)
+    num_of_signals = count_num_of_signals_aic(R, received_data.shape[1])
+    write_protocol_data(CMD_INFO, f"NUM_OF_SIGNALS {num_of_signals}")
+    calculated_angle, eigen_values, ei = DOA_TLS_ESPRIT_3(R, signal_dimension, wave_length)
+    # calculated_angle = DOA_TLS_ESPRIT(received_data_t, 1, wave_length)
+    # tls_esprit_file = open(os.path.dirname(__file__) + TLS_ESPRIT_ANGLE_FILE, mode = "a")
+    # tls_esprit_file.write(f"axis {axis} {calculated_angle}\n")
+    # tls_esprit_file.close()
 
-    return calculated_angle
+    return calculated_angle, eigen_values, ei
 
-def calculate_angle_root_music(steering, wave_length, axis):
-    R = corr_matrix_estimate(steering.T, imp = "fast")
+def calculate_angle_root_music(received_data, wave_length, axis):
+    R = corr_matrix_estimate(received_data.T, imp = "fast")
     angles = DOA_ROOT_MUSIC(R, 2, wave_length)
     esprit_file = open(os.path.dirname(__file__) + ROOT_MUSIC_FILE, mode = "a")
     esprit_file.write(f"axis {axis} {angles}\n")
@@ -396,7 +402,6 @@ def DOA_ESPRIT(covariance_matrix, num_of_signal_sources, wave_length) :
     return (-1 * angles) + np.pi / 2, eigen_values
 
 def DOA_LS_ESPRIT(covariance_matrix, num_of_signal_sources, wave_length) :
-    num_of_signal_sources = 1
     eigen_values, eigen_vectors = LA.eig(covariance_matrix)
     N = covariance_matrix.shape[0]
     # sorting from highest to lowest eigenvalues
@@ -430,7 +435,6 @@ def DOA_LS_ESPRIT(covariance_matrix, num_of_signal_sources, wave_length) :
     write_protocol_data(CMD_INFO, f"Es1 {Es1}\n Es2 {Es2}")
 
     Es1_H = Es1.conj().T
-    LA.inv(Es1_H @ Es2)
     phi = LA.inv(Es1_H @ Es1) @ (Es1_H @ Es2)
 
     write_protocol_data(CMD_INFO, f"phi {phi}")
@@ -515,11 +519,11 @@ def DOA_TLS_ESPRIT_2(cor_mat_1, cor_mat_2, num_of_signal_sources, wave_length) :
 
 def DOA_TLS_ESPRIT_3(correlation_matrix, num_of_signal_sources, wave_length) :
     N = correlation_matrix.shape[0]
-    eigen_values, eigen_vectors = LA.eig(correlation_matrix)
+    eigen_values_cor, eigen_vectors = LA.eig(correlation_matrix)
 
     eig = []
     for i in range(N):
-        eig.append([np.abs(eigen_values[i]), eigen_vectors[:, i]])
+        eig.append([np.abs(eigen_values_cor[i]), eigen_vectors[:, i]])
 
     for i, e in enumerate(eig):
         write_protocol_data(CMD_INFO, f"eig {i} {e}")
@@ -532,12 +536,18 @@ def DOA_TLS_ESPRIT_3(correlation_matrix, num_of_signal_sources, wave_length) :
     for i, e in enumerate(sorted_eig):
         write_protocol_data(CMD_INFO, f"sorted eig {i} {e}")
     sorted_signal_eigen_vectors = np.zeros((N, num_of_signal_sources), dtype = complex)
+    sorted_signal_eigen_values = np.zeros(num_of_signal_sources, dtype = complex)
     for i in range(num_of_signal_sources):
         sorted_signal_eigen_vectors[:, i] = sorted_eig[i][1]
+        sorted_signal_eigen_values[i] = sorted_eig[i][0]
 
     for i in range(num_of_signal_sources):
         write_protocol_data(CMD_INFO, f"sorted_signal_eigen_vectors {sorted_signal_eigen_vectors[:, i]}")
     signal_subspace = sorted_signal_eigen_vectors[:, :num_of_signal_sources]
+
+    signal_eigen_values = np.zeros(N, dtype = complex)
+    for i in range(N):
+        signal_eigen_values[i] = sorted_eig[i][0]#sorted_signal_eigen_values[:num_of_signal_sources]
 
     write_protocol_data(CMD_INFO, f"signal_subspace {signal_subspace}")
     Es_1 = signal_subspace[0:N-1, :]
@@ -567,7 +577,7 @@ def DOA_TLS_ESPRIT_3(correlation_matrix, num_of_signal_sources, wave_length) :
     eigen_values_c, E_c = LA.eig(C)
     sorted_C = []
     for i in range(len(eigen_values_c)):
-        sorted_C.append((np.abs(eigen_values_c[i]), E_c[:, i]))
+        sorted_C.append((np.real(eigen_values_c[i]), E_c[:, i]))
 
     sorted_C = sorted(sorted_C, key = lambda eig : eig[0], reverse = True)
     sorted_E_c = np.zeros((2 * num_of_signal_sources, 2 * num_of_signal_sources), dtype = complex)
@@ -583,7 +593,8 @@ def DOA_TLS_ESPRIT_3(correlation_matrix, num_of_signal_sources, wave_length) :
     mul = - E_12 @ LA.inv(E_22)
     eigen_values, _ = LA.eig(mul)
     write_protocol_data(CMD_INFO, f"E_s1 {Es_1} \n Es_2 {Es_2} \n E_c {E_c} \n E_12 {E_12.shape} {E_12}\n E_22 {E_22.shape} {E_22} \n eigen_values {eigen_values}")
-    return np.arccos(np.angle(eigen_values)/(np.pi * 2 * d / wave_length))
+    # return np.arccos(np.angle(eigen_values)/(np.pi * 2 * d / wave_length)), signal_eigen_values, np.arccos(tweak_angle(np.angle(eigen_values), 10, 0)/(np.pi * 2 * d / wave_length))
+    return np.arccos(tweak_angle(np.angle(eigen_values), 10, 0)/(np.pi * 2 * d / wave_length)), signal_eigen_values, np.arccos(tweak_angle(np.angle(eigen_values), 10, 0)/(np.pi * 2 * d / wave_length))
 
 from sympy import solve, poly
 from sympy.abc import z
@@ -613,3 +624,39 @@ def DOA_ROOT_MUSIC(covariance_matrix, num_of_signal_sources, wave_length):
     z_closest_to_unit_circle = filtered_z_roots[(-1 * num_of_signal_sources):]
     angles = np.arccos(np.angle(z_closest_to_unit_circle)/(np.pi * 2 * d / wave_length))
     return angles
+
+
+from scipy.stats import gmean
+def count_num_of_signals_mdl(cor_mat, num_of_snapshots):
+    p = len(cor_mat)
+    eig_values, _ = LA.eig(cor_mat)
+    index = np.flip(np.argsort(eig_values))
+    eig_values = eig_values[index]
+    write_protocol_data(CMD_INFO, f"EIGGGGGGGGGGGGGG {eig_values}, {num_of_snapshots}, {p}")
+
+    result = []
+    for d in range(p):
+        mdl = -1 * num_of_snapshots * np.log(np.prod(eig_values[d:]) / (np.mean(eig_values[d:])**(p-d))) + 1/2 * d * (2 * p - d) * np.log(num_of_snapshots)
+        write_protocol_data(CMD_INFO, f"DDDDDDDDDDDDDDDDDDDD {d} {p} {num_of_snapshots} {np.prod(eig_values[d:])} {np.mean(eig_values[d:])} {eig_values[d:]}")
+        result.append((d, mdl))
+
+    write_protocol_data(CMD_INFO, f"MDLLLLLLLLLLLLLLL {result}")
+    return result
+
+
+def count_num_of_signals_aic(cor_mat, num_of_snapshots):
+    p = len(cor_mat)
+    eig_values, _ = LA.eig(cor_mat)
+    index = np.flip(np.argsort(eig_values))
+    eig_values = eig_values[index]
+    write_protocol_data(CMD_INFO, f"EIGGGGGGGGGGGGGG {eig_values}, {num_of_snapshots}, {p}")
+
+    result = []
+    for d in range(p):
+        mdl = -2 * num_of_snapshots * np.log(np.prod(eig_values[d:]) / (np.mean(eig_values[d:])**(p-d))) + 2 * d * (2 * p - d)
+        write_protocol_data(CMD_INFO, f"DDDDDDDDDDDDDDDDDDDD {d} {p} {num_of_snapshots} {np.prod(eig_values[d:])} {np.mean(eig_values[d:])} {eig_values[d:]}")
+        result.append((d, mdl))
+
+    write_protocol_data(CMD_INFO, f"AICCCCCCCCCCCCCCCCCCCCCCC {result}")
+    return result
+    

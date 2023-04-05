@@ -886,5 +886,8 @@ bool Processor::extractData(QByteArray rawData, QByteArray *p_result){
 
 
 Processor::~Processor(){
+    qDebug()<<"haha";
+    locationCalculatorProcessor->close();
+    locationCalculatorProcessor->terminate();
     locationCalculatorProcessor->kill();
 }
