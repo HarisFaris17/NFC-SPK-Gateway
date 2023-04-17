@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     addDevicePushButton = ui->addDevicePushButton;
     settingPushButton = ui->settingPushButton;
     coordinatesPushButton = ui->coordinatesPushButton;
+    saveGatewayMACPushButton = ui->saveGatewayMACPushButton;
 
     ipAddressTCPLineEdit = ui ->ipAddressTCPLineEdit;
     portTCPLineEdit = ui->portTCPLineEdit;
@@ -29,15 +30,24 @@ MainWindow::MainWindow(QWidget *parent) :
     databaseNameDatabaseLineEdit = ui->databaseNameDatabaseLineEdit;
     usernameDatabaseLineEdit = ui->usernameDatabaseLineEdit;
     passwordDatabaseLineEdit = ui->passwordDatabaseLineEdit;
+    gateway1MACLineEdit = ui->gateway1MACLineEdit;
+    gateway2MACLineEdit = ui->gateway2MACLineEdit;
 
     console = ui->console;
     tableWidgetCounting = ui->tableWidgetCounting;
     tableWidgetHistoryCounting = ui->tableWidgetHistoryCounting;
-//    tableWidgetLocation = ui->tableWidgetLocation;
+
+
+    QRegularExpression re("[0-9a-fA-F]+");
+    QRegularExpressionValidator *validator = new QRegularExpressionValidator(re, this);
+
+    gateway1MACLineEdit->setValidator(validator);
+    gateway2MACLineEdit->setValidator(validator);
 
     connect(addDevicePushButton, &QPushButton::clicked, this, &MainWindow::showAddDevice);
     connect(settingPushButton, &QPushButton::clicked, this, &MainWindow::showSettingLocator);
     connect(coordinatesPushButton, &QPushButton::clicked, this, &MainWindow::showCoordinates);
+    connect(saveGatewayMACPushButton, &QPushButton::clicked, this, &MainWindow::saveGatewayMACs);
 
     processor = new Processor;
     QThread *processorThread = new QThread;
@@ -46,19 +56,28 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(processor, &Processor::sendLocation, this, &MainWindow::receiveLocation);
     connect(processor, &Processor::sendCumulativeLocation, this, &MainWindow::receiveCumulativeLocation);
     connect(processor, &Processor::sendHistory, this, &MainWindow::receiveHistory);
+    connect(this, &MainWindow::sendGatewayMAC, processor, &Processor::changeGatewayMAC);
     connect(this, &MainWindow::destroyed, processorThread, &QThread::quit);
     connect(processorThread, &QThread::started, processor, &Processor::started);
     connect(processorThread, &QThread::finished, processor, &Processor::deleteLater);
-    connect(processorThread, &QThread::finished, processorThread, &Processor::deleteLater);
+    connect(processorThread, &QThread::finished, processorThread, &QThread::deleteLater);
 
     processor->moveToThread(processorThread);
     processorThread->start(QThread::HighPriority);
 
-    qDebug()<<"mainwindow thread : "<<QThread::currentThread();
+    andonProcessor = new AndonProcessor;
+    QThread *andonProcessorThread = new QThread;
+    connect(this, &MainWindow::destroyed, andonProcessorThread, &QThread::quit);
+    connect(andonProcessorThread, &QThread::started, andonProcessor, &AndonProcessor::started);
+    connect(andonProcessorThread, &QThread::finished, andonProcessor, &AndonProcessor::deleteLater);
+    connect(andonProcessorThread, &QThread::finished, andonProcessorThread, &QThread::deleteLater);
+
+    andonProcessor->moveToThread(andonProcessorThread);
+    andonProcessorThread->start(QThread::HighPriority);
+
     connect(connectTCPPushButton,&QPushButton::clicked,this,&MainWindow::connectDisconnectTCP);
 
     connect(connectDatabasePushButton, &QPushButton::clicked, this, &MainWindow::connectDisconnectDatabase);
-//    connect(unlistenPushButton,&QPushButton::clicked,this,&MainWindow::unlisten);
 
     protoTableWidgetItem = new QTableWidgetItem();
     protoTableWidgetItem->setFlags(protoTableWidgetItem->flags() & ~Qt::ItemIsEditable);
@@ -86,6 +105,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connectDisconnectTCP();
     connectDisconnectDatabase();
+
+    QString gateway1MAC;
+    QString gateway2MAC;
+    file.parseGatewayMac(gateway1MAC, gateway2MAC);
+
+    gateway1MACLineEdit->setText(gateway1MAC);
+    gateway2MACLineEdit->setText(gateway2MAC);
+
+    Q_EMIT sendGatewayMAC(gateway1MAC, gateway2MAC);
 }
 
 void MainWindow::connectDisconnectTCP(){
@@ -225,9 +253,6 @@ void MainWindow::timerDatabaseTimeout(){
 
 void MainWindow::receiveDataConsole(QString data){
     qDebug()<<data;
-
-//    qDebug()<<QString::fromUtf8(data);
-//    console->append(QString::fromUtf8(data));
     console->append(data);
 }
 
@@ -250,21 +275,12 @@ void MainWindow::receiveDataTableCounting(QString deviceId, QString tagId, QStri
     dateTimeItem->setText(dateTime);
 
     int row = deviceIds.indexOf(deviceId);
-//    if (deviceId == "DCC7CD766E3A"){
     tableWidgetCounting->setItem(row, DEVICE_ID, deviceIdItem);
     tableWidgetCounting->setItem(row, TAG_ID, tagIdItem);
     tableWidgetCounting->setItem(row, SPK, spkItem);
     tableWidgetCounting->setItem(row, COUNTER, counterItem);
     tableWidgetCounting->setItem(row, LAST_UPDATE, dateTimeItem);
     qDebug() << row << deviceId << tagId << spk << counter << deviceIds <<__func__;
-//    }
-//    else if (deviceId == "E985AED59234"){
-//        tableWidgetCounting->setItem(1, DEVICE_ID, deviceIdItem);
-//        tableWidgetCounting->setItem(1, TAG_ID, tagIdItem);
-//        tableWidgetCounting->setItem(1, SPK, spkItem);
-//        tableWidgetCounting->setItem(1, COUNTER, counterItem);
-//        tableWidgetCounting->setItem(1, LAST_UPDATE, dateTimeItem);
-//    }
 }
 
 void MainWindow::receiveLocation(QString deviceId, int locator, double x, double y, double z){
@@ -525,6 +541,22 @@ void MainWindow::tableCreateResult(bool isDeviceTableCreated,
     qDebug()<<"Data table created : " << isDataTableCreated;
     qDebug()<<"Device location table created : " << isDevicelocationTableCreated;
     qDebug()<<"Data location table created : " << isDataLocationTableCreated;
+}
+
+void MainWindow::saveGatewayMACs(){
+    File file;
+    QString gateway1MAC = gateway1MACLineEdit->text().toUpper();
+    QString gateway2MAC = gateway2MACLineEdit->text().toUpper();
+
+    if (gateway1MAC.isEmpty()){
+        gateway1MAC = DEFAULT_GATEWAY_1_MAC;
+    }
+    if (gateway2MAC.isEmpty()){
+        gateway2MAC = DEFAULT_GATEWAY_2_MAC;
+    }
+
+    file.saveGatewayMAC(gateway1MAC, gateway2MAC);
+    Q_EMIT sendGatewayMAC(gateway1MAC, gateway2MAC);
 }
 
 void MainWindow::showSettingLocator(){

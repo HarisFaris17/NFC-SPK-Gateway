@@ -790,7 +790,7 @@ public:
     {
         SettingLocator->setWindowTitle(QApplication::translate("SettingLocator", "Dialog", Q_NULLPTR));
         groupBox_2->setTitle(QApplication::translate("SettingLocator", "Locators Coordinarte", Q_NULLPTR));
-        groupBox_9->setTitle(QApplication::translate("SettingLocator", "Locator Group 0", Q_NULLPTR));
+        groupBox_9->setTitle(QApplication::translate("SettingLocator", "Gateway 1", Q_NULLPTR));
         groupBox->setTitle(QApplication::translate("SettingLocator", "Locator 0", Q_NULLPTR));
         label_3->setText(QApplication::translate("SettingLocator", "x", Q_NULLPTR));
         label_4->setText(QApplication::translate("SettingLocator", "y", Q_NULLPTR));
@@ -807,7 +807,7 @@ public:
         label_25->setText(QApplication::translate("SettingLocator", "x", Q_NULLPTR));
         label_26->setText(QApplication::translate("SettingLocator", "y", Q_NULLPTR));
         label_27->setText(QApplication::translate("SettingLocator", "z", Q_NULLPTR));
-        groupBox_12->setTitle(QApplication::translate("SettingLocator", "Locator Group 1", Q_NULLPTR));
+        groupBox_12->setTitle(QApplication::translate("SettingLocator", "Gateway 2", Q_NULLPTR));
         groupBox_4->setTitle(QApplication::translate("SettingLocator", "Locator 4", Q_NULLPTR));
         label_6->setText(QApplication::translate("SettingLocator", "x", Q_NULLPTR));
         label_7->setText(QApplication::translate("SettingLocator", "y", Q_NULLPTR));

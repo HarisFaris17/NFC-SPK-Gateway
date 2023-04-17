@@ -511,8 +511,8 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_music(new_angles_to_
                 write_protocol_data(CMD_INFO, f"Calculated x,y from cumul phase diff of mac {mac} in locator {locator_idx} : {x},{y}")
                 print(f"Locator {locator_idx} angle : {calculated_angle}, coordinate : {x}, {y}", file = file_cumul_diff_phase, flush=True)
                 print(f"Locator {locator_idx} angle : {calculated_angle_with_mag}, coordinate : {x_2}, {y_2}", file = file_cumul_2_diff_phase, flush=True)
-                body_ok = BODY_AOA_COORD_SINGLE_LOCATOR_ELEMENT_TYPE.format(mac = mac, locator = locator_idx, x = x, y = y, z = z)
-                write_protocol_data(CMD_OK, body_ok)
+                # body_ok = BODY_AOA_COORD_SINGLE_LOCATOR_ELEMENT_TYPE.format(mac = mac, locator = locator_idx, x = x, y = y, z = z)
+                # write_protocol_data(CMD_OK, body_ok)
 
 
 def location_aoa_calculator_cumul_phase_diff_single_locator_music_extended(new_angles_to_calculated_cumul_phase_diff_per_locator_queue : Queue, diff_phase_buffer : dict, mag_buffer : dict, angle_buffer:dict, new_angles_cumul_phase_diff_cumul_angle_buffer : Queue) :
@@ -636,6 +636,7 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_esprit(new_angles_to
                 calculated_angle = []
                 calculated_angle_tls = []
                 eig = []
+                nums_of_signals = []
                 continue_to_process = True
                 for axis in range(NUM_OF_AXIS):
                     diff_phase_per_axis = diff_phase[axis]
@@ -651,11 +652,14 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_esprit(new_angles_to
                     # if MUSIC_WITH_SPATIAL_SMOOTHING:
                     # calculated_angle = calculate_angle_music_spatial_smoothing(received_data, wave_length)
                     calculated_angle_esprit_per_axis = calculate_angle_esprit(received_data, 0.12, 2)
-                    calculated_angle_esprit_tls_per_axis, eigen_values, ei = calculate_angle_tls_esprit(received_data, 0.12, 2)
+                    calculated_angle_esprit_tls_per_axis, eigen_values, ei, num_of_signals = calculate_angle_tls_esprit(received_data, 0.12, 2)
 
-                    # if calculated_angle_esprit_tls_per_axis >= np.pi - 0.1 or calculated_angle_esprit_tls_per_axis <= 0.1:
-                    #     continue_to_process = False
-                    #     break
+                    if calculated_angle_esprit_tls_per_axis >= np.pi - 0.1 or calculated_angle_esprit_tls_per_axis <= 0.1:
+                        continue_to_process = False
+                        break
+
+                    if calculated_angle_esprit_tls_per_axis >= ANGLE_UPPER_BOUND or calculated_angle_esprit_tls_per_axis <= ANGLE_LOWER_BOUND:
+                        calculated_angle_esprit_tls_per_axis = tweak_angle(calculated_angle_esprit_tls_per_axis, 5)
 
                     write_protocol_data(CMD_INFO, f"Calculated cumulative phase diff using ESPRIT method: {locator_idx}, {axis} mac {mac}, calculated angle {calculated_angle_esprit_per_axis}")
                     write_protocol_data(CMD_INFO, f"Calculated cumulative phase diff using TLS ESPRIT method: {locator_idx}, {axis} mac {mac}, calculated angle {calculated_angle_esprit_tls_per_axis}")
@@ -675,6 +679,7 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_esprit(new_angles_to
 
                     calculated_angle.append(calculated_angle_esprit_per_axis)
                     calculated_angle_tls.append(calculated_angle_esprit_tls_per_axis)
+                    nums_of_signals.append(num_of_signals)
                     eig.append((eigen_values, ei))
 
                 if not continue_to_process: continue
@@ -697,7 +702,9 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_esprit(new_angles_to
                 # write_protocol_data(CMD_OK, body_ok)
                 write_protocol_data(CMD_INFO, f"Calculated x,y from cumul phase diff of mac {mac} in locator {locator_idx} : {x},{y}")
                 # print(f"angle : {calculated_angle_tls}, coordinate : {x}, {y}", file = file_cumul_diff_phase_esprit, flush = True)
-                print(f"angle : {calculated_angle_tls}, coordinate : {x}, {y}, eigen values {eig}", file = file_cumul_diff_phase_esprit, flush = True)
+                print(f"angle : {calculated_angle_tls}, coordinate : {x}, {y}, Num of signals : {nums_of_signals}, eigen values {eig}", file = file_cumul_diff_phase_esprit, flush = True)
+                print(f"{x}, {y}", file = file_cumul_diff_phase_esprit, flush = True)
+
 
         # if CALCULATOR_ANGLE_BUFFER == ESPRIT_CALCULATOR:
         #     new_angles_cumul_phase_diff_cumul_angle_buffer : Queue = args(1)
@@ -706,6 +713,7 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_esprit(new_angles_to
 
 def location_aoa_calculator_cumul_phase_diff_single_locator_esprit_extended(new_angles_to_calculated_cumul_phase_diff_per_locator_esprit_queue : Queue, diff_phase_buffer : dict, mag_buffer : dict, angle_buffer:dict, new_angles_cumul_phase_diff_cumul_angle_buffer : Queue) :
     file_cumul_diff_phase_esprit = open(os.path.dirname(__file__) + ESPRIT_CUMUL_DIFF_PHASE_FILE, mode = "a")
+    i = 0
     while True:
         # (mac, locator_idx_set) = new_angles_to_calculated_cumul_phase_diff_per_locator_queue.get()
         new_angles_from = new_angles_to_calculated_cumul_phase_diff_per_locator_esprit_queue.get()
@@ -721,6 +729,9 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_esprit_extended(new_
                 num_iq_sets_per_axis_per_array = diff_phase.shape[2]
                 received_data = np.zeros((SIZE_OF_ANT_ARRAY, num_iq_sets_per_axis_per_array), dtype = complex)
                 calculated_angle = []
+                calculated_angle1 = []
+                calculated_angle2 = []
+                calculated_angle3 = []
                 # calculated_angle_tls = []
                 continue_to_process = True
                 for axis in range(NUM_OF_AXIS):
@@ -729,7 +740,7 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_esprit_extended(new_
                     # representing phase difference to antenna reference, which means has a phaes difference 0 to reference
                     try:
                         for ant in range(SIZE_OF_ANT_ARRAY):
-                            received_data[ant, :] = [np.exp(1j * diff_phase_element) for (diff_phase_element, mag) in zip(diff_phase_per_axis[ant], magnitude_per_axis[ant])]
+                            received_data[ant, :] = [mag * np.exp(1j * diff_phase_element) for (diff_phase_element, mag) in zip(diff_phase_per_axis[ant], magnitude_per_axis[ant])]
                     except:
                         continue_to_process = False
                         break
@@ -737,16 +748,20 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_esprit_extended(new_
                     if ESPRIT_CALCULATOR == ESPRIT_CALCULATOR_LS:
                         calculated_angle_esprit_per_axis = calculate_angle_esprit(received_data, 0.12)
                     elif ESPRIT_CALCULATOR == ESPRIT_CALCULATOR_TLS:
-                        calculated_angle_esprit_per_axis = calculate_angle_tls_esprit(received_data, 0.12)
+                        calculated_angle_esprit_per_axis, calculated_angle_esprit_per_axis1, calculated_angle_esprit_per_axis2, calculated_angle_esprit_per_axis3 = calculate_angle_tls_esprit(received_data, 0.12)
 
                     if calculated_angle_esprit_per_axis >= np.pi - 0.1 or calculated_angle_esprit_per_axis <= 0.1:
                         continue_to_process = False
                         break
 
                     if APPLY_ANGLE_TWEAK :
+                        if calculated_angle_esprit_per_axis >= ANGLE_UPPER_BOUND or calculated_angle_esprit_per_axis <= ANGLE_LOWER_BOUND:
+                            calculated_angle_esprit_per_axis = tweak_angle(calculated_angle_esprit_per_axis, 5)
+
+                    # if APPLY_ANGLE_TWEAK :
                         # calculated_angle_music_per_axis += (-1) * (calculated_angle_music_per_axis - np.pi / 2) / 5
                         # (-1) * ((calculated_angle_esprit_per_axis - np.pi / 2))**2 / 6 * ((calculated_angle_esprit_per_axis - np.pi / 2) / np.abs(calculated_angle_esprit_per_axis - np.pi / 2))
-                        calculated_angle_esprit_per_axis = tweak_angle(calculated_angle_esprit_per_axis, 5)
+                        # calculated_angle_esprit_per_axis = tweak_angle(calculated_angle_esprit_per_axis, 5)
                         # calculated_angle_esprit_tls_per_axis += (-1) * ((calculated_angle_esprit_tls_per_axis - np.pi / 2))**2 / 6 * ((calculated_angle_esprit_tls_per_axis - np.pi / 2) / np.abs(calculated_angle_esprit_tls_per_axis - np.pi / 2))
                         # calculated_angle_esprit_tls_per_axis = tweak_angle(calculated_angle_esprit_tls_per_axis, 5)
 
@@ -754,6 +769,9 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_esprit_extended(new_
                     #     # write_protocol_data(CMD_INFO, f"Calculated angle using Spatial Smoothing MUSIC algorith {calculated_angle}")
                     #     break
                     calculated_angle.append(calculated_angle_esprit_per_axis[0])
+                    calculated_angle1.append(calculated_angle_esprit_per_axis1[0])
+                    calculated_angle2.append(calculated_angle_esprit_per_axis2[0])
+                    calculated_angle3.append(calculated_angle_esprit_per_axis3[0])
                     # calculated_angle_tls.append(calculated_angle_esprit_tls_per_axis[0])
 
                 if not continue_to_process: continue
@@ -765,21 +783,38 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_esprit_extended(new_
                 determiner_value = eval_determiner_angles_xy_invalid(calculated_angle)
                 if determiner_value < 0 : continue
             
-                append_angle_to_angle_buffer(angle_buffer, calculated_angle, locator_idx, mac)
+                append_angle_to_angle_buffer(angle_buffer, calculated_angle1, locator_idx, mac)
                 succeed_calculated_angles[mac].add(locator_idx)
 
                 z = locator_distance_ref[locator_idx][2]
 
                 hypotenuse = z / sqrt(determiner_value)
 
-                x = hypotenuse * cos(calculated_angle[0])
-                y = hypotenuse * cos(calculated_angle[1])
+                x = hypotenuse * cos(calculated_angle[0]) + locator_distance_ref[locator_idx][0]
+                y = hypotenuse * cos(calculated_angle[1]) + locator_distance_ref[locator_idx][1]
 
-                # body_ok = BODY_AOA_COORD_SINGLE_LOCATOR_ELEMENT_TYPE.format(mac = mac, locator = locator_idx, x = x, y = y, z = z)
-                # write_protocol_data(CMD_OK, body_ok)
+                body_ok = BODY_AOA_COORD_SINGLE_LOCATOR_ELEMENT_TYPE.format(mac = mac, locator = locator_idx, x = x, y = y, z = z)
+                write_protocol_data(CMD_OK, body_ok)
+
+                determiner_value1 = eval_determiner_angles_xy_invalid(calculated_angle1)
+                hypotenuse1 = z / sqrt(determiner_value1)
+                x1 = hypotenuse1 * cos(calculated_angle1[0]) + locator_distance_ref[locator_idx][0]
+                y1 = hypotenuse1 * cos(calculated_angle1[1]) + locator_distance_ref[locator_idx][1]
+
+                determiner_value2 = eval_determiner_angles_xy_invalid(calculated_angle2)
+                hypotenuse2 = z / sqrt(determiner_value2)
+                x2 = hypotenuse2 * cos(calculated_angle2[0]) + locator_distance_ref[locator_idx][0]
+                y2 = hypotenuse2 * cos(calculated_angle2[1]) + locator_distance_ref[locator_idx][1]
+
+                determiner_value3 = eval_determiner_angles_xy_invalid(calculated_angle3)
+                hypotenuse3 = z / sqrt(determiner_value3)
+                x3 = hypotenuse3 * cos(calculated_angle3[0]) + locator_distance_ref[locator_idx][0]
+                y3 = hypotenuse3 * cos(calculated_angle3[1]) + locator_distance_ref[locator_idx][1]
                 write_protocol_data(CMD_INFO, f"Calculated x,y from cumul phase diff of mac {mac} in locator {locator_idx} : {x},{y}")
                 # print(f"angle : {calculated_angle_tls}, coordinate : {x}, {y}", file = file_cumul_diff_phase_esprit, flush = True)
-                print(f"angle : {calculated_angle}, coordinate : {x}, {y}", file = file_cumul_diff_phase_esprit, flush = True)
+                # print(f"angle : {calculated_angle}, coordinate : {x}, {y}", file = file_cumul_diff_phase_esprit, flush = True)
+                print(f"INDEXXXXX {i} Angle 0 {calculated_angle[0]}, {calculated_angle[1]} : {x}, {y} Angle 1 {calculated_angle1[0]}, {calculated_angle1[1]} : {x1}, {y1} Angle 2 {calculated_angle2[0]}, {calculated_angle2[1]} : {x2}, {y2} Angle 3 {calculated_angle3[0]}, {calculated_angle3[1]} : {x3}, {y3}", file = file_cumul_diff_phase_esprit, flush = True)
+                i += 1
 
         new_angles_cumul_phase_diff_cumul_angle_buffer.put(succeed_calculated_angles)
 

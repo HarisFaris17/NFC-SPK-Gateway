@@ -12,6 +12,7 @@ INPUT(
 ./release\settinglocator.o
 ./release\adddevice.o
 ./release\coordinatesystem.o
+./release\andonprocessor.o
 ./release\moc_mainwindow.o
 ./release\moc_tcpserver.o
 ./release\moc_tcp.o
@@ -22,4 +23,5 @@ INPUT(
 ./release\moc_settinglocator.o
 ./release\moc_adddevice.o
 ./release\moc_coordinatesystem.o
+./release\moc_andonprocessor.o
 );

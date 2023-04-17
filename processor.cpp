@@ -57,7 +57,8 @@
 
 Processor::Processor()
 {
-
+    gateway1MAC = DEFAULT_GATEWAY_1_MAC;
+    gateway2MAC = DEFAULT_GATEWAY_2_MAC;
 }
 
 void Processor::receiveTcpData(QByteArray rawData){
@@ -71,11 +72,19 @@ void Processor::receiveTcpData(QByteArray rawData){
 
     QJsonArray dataJsonArray = dataJson.array();
     qDebug()<<dataJsonArray;
-//    QString wantedMac = tr("DCC7CD766E3A");
-//    QString wantedMac2 = tr("E985AED59234");
-    QString dataToLocationProcessor = QString();//tr("%1 ").arg(COMMAND_DATA);
+    QString dataToLocationProcessor = QString();
     File file;
-    for (auto dataIterator = dataJsonArray.begin(); dataIterator != dataJsonArray.end(); ++dataIterator){
+
+    // first element of the json array contains gateway information
+    auto firstElement = dataJsonArray[0].toObject();
+
+    QString gatewayMAC = firstElement.value("gateway").toString().toUpper();
+    if (gatewayMAC != gateway1MAC && gatewayMAC != gateway2MAC) {
+        qDebug() << "NOOOOOOOOOOOOOOOOOTTTTTTTTTTTTTTTTTTTTTTTTTT WANNNNNNNNTEEEEEEEEEEDDDDDDDDDDDDDD MACCCCCCc";
+        return;
+    }
+
+    for (auto dataIterator = ++dataJsonArray.begin(); dataIterator != dataJsonArray.end(); ++dataIterator){
         QJsonValue dataElement = *dataIterator;
 
         if (!dataElement.isObject()){
@@ -411,6 +420,12 @@ void Processor::locationCalculatorStarted(){
 //    QProcess *locationCalculatorProcessor = qobject_cast<QProcess *>(sender());
     qDebug()<<"Location calculator program started"<<locationCalculatorProcessor->state();
 //    if (locationCalculatorProcessor->state() == QProcess::N)
+}
+
+void Processor::changeGatewayMAC(const QString &gateway1MAC, const QString &gateway2MAC){
+    this->gateway1MAC = gateway1MAC;
+    this->gateway2MAC = gateway2MAC;
+    qDebug() << "Gateway MAC changed";
 }
 
 void Processor::readyRead(){

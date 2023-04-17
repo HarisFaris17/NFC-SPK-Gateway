@@ -135,6 +135,35 @@ void File::parseRSSI(QString &RSSI1m, QString &RSSI2m){
     RSSI2m = RSSIs[1];
 }
 
+void File::parseGatewayMac(QString &gateway1MAC, QString &gateway2MAC){
+    setFileName(GATEWAY_MAC_FILE);
+
+    open(ReadOnly);
+
+    if (!isOpen()){
+        qDebug() << "The Gateway MAC file failed to be opened";
+        return;
+    }
+
+    QByteArray savedBytes = readAll();
+
+
+    QList<QByteArray> gatewayMACs = savedBytes.split('\n');
+
+    qDebug() << "Gateway mac file " << savedBytes << gatewayMACs;
+
+    if (gatewayMACs.size() == 2){
+        gateway1MAC = QString(gatewayMACs[0]).toUpper();
+        gateway2MAC = QString(gatewayMACs[1]).toUpper();
+    }
+    else{
+        qDebug() << "The should be exactly 2 gateway MACs in " << GATEWAY_MAC_FILE;
+        qDebug() << "Change MAC to default";
+        gateway1MAC = DEFAULT_GATEWAY_1_MAC;
+        gateway2MAC = DEFAULT_GATEWAY_2_MAC;
+    }
+}
+
 void File::saveDatabaseConfig(QString host, QString databasePort, QString databaseName, QString userName, QString password){
     QString ipAddressTCPServer;
     QString portTCPServer;
@@ -405,6 +434,30 @@ bool File::saveCalculatorData(const QByteArray &data){
     qDebug() << data;
     close();
 
+    return true;
+}
+
+bool File::saveGatewayMAC(const QString gateway1MAC, const QString gateway2MAC){
+    bool isSuccess = true;
+
+    setFileName(GATEWAY_MAC_FILE);
+
+    open(QFile::WriteOnly);
+    if(!isOpen()){
+        qDebug()<<"The gateway mac file failed to be opened";
+        return false;
+    }
+
+    qDebug()<<"Saving gateway mac configurations";
+    QByteArray savedString;
+    savedString += gateway1MAC.toUtf8() + '\n';
+    savedString += gateway2MAC.toUtf8();
+
+    write(savedString);
+    qDebug() << savedString;
+    close();
+
+    return true;
 }
 
 QByteArray File::parseData(QByteArray &data, int &index, bool &isSuccess){

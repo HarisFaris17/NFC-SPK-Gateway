@@ -54,6 +54,8 @@ public Q_SLOTS:
                               QString x6, QString y6, QString z6,
                               QString x7, QString y7, QString z7);
 
+    void changeGatewayMAC(const QString &gateway1MAC, const QString &gateway2MAC);
+
 private Q_SLOTS:
     void readyRead();
 
@@ -92,10 +94,10 @@ private:
     bool saveIQ(const QString macAddress, const QByteArray dataIQ);
 private:
     QProcess *locationCalculatorProcessor;
-
-
-//    QList<Coordinate> coordinates;
     QMap<QString, DeviceDataContainer> deviceDataBuffer;
+
+    QString gateway1MAC;
+    QString gateway2MAC;
 
 //    QVector<QList<Coordinate>> coordinatesBuffer = QVector<QList<Coordinate>>(4);
 };

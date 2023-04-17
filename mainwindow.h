@@ -8,6 +8,7 @@
 #include "settinglocator.h"
 #include "database.h"
 #include "adddevice.h"
+#include "andonprocessor.h"
 #include "coordinatesystem.h"
 #include <QMainWindow>
 #include <QPushButton>
@@ -34,7 +35,6 @@ public Q_SLOTS:
     void connectDisconnectTCP();
     void listenResult(bool isSuccess);
     void unlistenedTcp();
-//    void receiveData(QJsonObject data);
 
     void timerTcpTimeout();
     void timerDatabaseTimeout();
@@ -77,7 +77,7 @@ public Q_SLOTS:
     void tableCreateResult(bool isDeviceTableCreated, bool isDataTableCreated, bool isDeviceLocationTableCreated, bool isDataLocationTableCreated);
 
 
-
+    void saveGatewayMACs();
 
 Q_SIGNALS:
     void listen(const QString &ipAddress,const QString &port);
@@ -88,6 +88,7 @@ Q_SIGNALS:
     void disconnectDatabase();
     void deleteTimerDatabase();
 
+    void sendGatewayMAC(const QString &gateway1MAC, const QString &gateway2MAC);
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -106,11 +107,14 @@ private:
     QLineEdit *databaseNameDatabaseLineEdit;
     QLineEdit *usernameDatabaseLineEdit;
     QLineEdit *passwordDatabaseLineEdit;
+    QLineEdit *gateway1MACLineEdit;
+    QLineEdit *gateway2MACLineEdit;
     QPushButton *connectTCPPushButton;
     QPushButton *connectDatabasePushButton;
     QPushButton *addDevicePushButton;
     QPushButton *settingPushButton;
     QPushButton *coordinatesPushButton;
+    QPushButton *saveGatewayMACPushButton;
     QTextBrowser *console;
 
     QTableWidget *tableWidgetCounting;
@@ -120,6 +124,7 @@ private:
 
     Processor *processor = NULL;
     Database *database = NULL;
+    AndonProcessor *andonProcessor = NULL;
 
     QList<QString> deviceIds;
 
@@ -198,6 +203,8 @@ private Q_SLOTS:
     void resetSettingLocator();
     void resetAddDevice();
     void resetCoordinate();
+
+
 
 private:
     void changeDisplayStateTCP();

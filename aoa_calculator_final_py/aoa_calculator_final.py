@@ -326,13 +326,24 @@ def sub_main_thread(buffered_data):
                 # body_info = "Actual Phase array {actual_phase_array}".format(actual_phase_array = actual_phase_array)
                 # write_protocol_data(command = CMD_INFO, body = body_info)
 
-                phase_diff_array = calculate_phase_diff_reference(reference_phase_array)
-                # body_info = "Phase Difference Array {phase_diff_array}".format(phase_diff_array = phase_diff_array)
-                # write_protocol_data(command = CMD_INFO, body = body_info)
-                
-                phase_diff_mean = np.mean(phase_diff_array)
-                # body_info = "Phase Difference Mean {phase_diff_mean}".format(phase_diff_mean = phase_diff_mean)
-                # write_protocol_data(command = CMD_INFO, body = body_info)
+                if USE_NLS_PHASE_DIFF:
+                    phase_diff_mean = calculate_phase_diff_reference_2(iq[:2 * NUMBER_OF_REFERENCE_IQ:2], iq[1 : 2 * NUMBER_OF_REFERENCE_IQ + 1 : 2])
+                else:
+                    phase_diff_array = calculate_phase_diff_reference(reference_phase_array)
+                    phase_diff_mean = np.mean(phase_diff_array)
+
+                    freq_offset_array = calculate_freq_offset(phase_diff_array)
+                    # write_protocol_data(CMD_INFO, f"Frequency Offset Array {freq_offset_array}")
+
+                    freq_offset_mean = np.mean(freq_offset_array)
+                    # write_protocol_data(CMD_INFO, f"Frequency Offset Mean {freq_offset_mean}")
+
+                    freq = freq_carrier + freq_offset_mean
+                    wave_length = speed_of_light / freq
+                    write_protocol_data(CMD_INFO, f"Wave length {wave_length}")
+
+                body_info = "Phase Difference Mean {phase_diff_mean}".format(phase_diff_mean = phase_diff_mean)
+                write_protocol_data(command = CMD_INFO, body = body_info)
 
                 # diff_phase = diff_actual_to_predict_phase(phase_array, phase_diff_mean)
                 # body_info = "diff phase {diff_phase}".format(diff_phase = diff_phase)
@@ -362,21 +373,17 @@ def sub_main_thread(buffered_data):
                     diff_phase_buffer[mac][locator_idx] = np.append(diff_phase_buffer[mac][locator_idx], diff_phase, axis = 2)
                     mag_buffer[mac][locator_idx] = np.append(mag_buffer[mac][locator_idx], reshaped_mag, axis = 2)
 
-                freq_offset_array = calculate_freq_offset(phase_diff_array)
-                # write_protocol_data(CMD_INFO, f"Frequency Offset Array {freq_offset_array}")
-
-                freq_offset_mean = np.mean(freq_offset_array)
-                # write_protocol_data(CMD_INFO, f"Frequency Offset Mean {freq_offset_mean}")
-
-                freq = freq_carrier + freq_offset_mean
-                wave_length = speed_of_light / freq
-                write_protocol_data(CMD_INFO, f"Wave length {wave_length}")
                 angle_elevation = np.zeros(NUM_OF_AXIS, float64)
                 continue_to_process = True
                 
                 angle_elevation_music = np.zeros(NUM_OF_AXIS, float64)
                 angle_elevation_music_smoothing = np.zeros(NUM_OF_AXIS, float64)
                 num_iq_sets_per_axis_per_array = diff_phase.shape[2]
+
+                if mac not in new_angle_queue:
+                    # set (himpunan in bahasa) all the locator that involved in catching certain mac in this batch
+                    new_angle_queue[mac] = set()
+                new_angle_queue[mac].add(locator_idx)
 
                 if not CALCULATE_ONLY_CUMUL_PHASE_DIFF:
                     for axis in range(NUM_OF_AXIS):
@@ -468,12 +475,6 @@ def sub_main_thread(buffered_data):
                     new_angle_convenient["locator_idx"] = locator_idx
 
                     new_angle_convenient_queue.put(new_angle_convenient)
-
-
-            if mac not in new_angle_queue:
-                # set (himpunan in bahasa) all the locator that involved in catching certain mac in this batch
-                new_angle_queue[mac] = set()
-            new_angle_queue[mac].add(locator_idx)
 
             for mac in batch_count.keys():
                 for locator_idx in batch_count[mac].keys():

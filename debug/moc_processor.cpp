@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Processor_t {
-    QByteArrayData data[64];
-    char stringdata0[538];
+    QByteArrayData data[67];
+    char stringdata0[579];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -92,7 +92,10 @@ QT_MOC_LITERAL(59, 516, 2), // "z6"
 QT_MOC_LITERAL(60, 519, 2), // "x7"
 QT_MOC_LITERAL(61, 522, 2), // "y7"
 QT_MOC_LITERAL(62, 525, 2), // "z7"
-QT_MOC_LITERAL(63, 528, 9) // "readyRead"
+QT_MOC_LITERAL(63, 528, 16), // "changeGatewayMAC"
+QT_MOC_LITERAL(64, 545, 11), // "gateway1MAC"
+QT_MOC_LITERAL(65, 557, 11), // "gateway2MAC"
+QT_MOC_LITERAL(66, 569, 9) // "readyRead"
 
     },
     "Processor\0sendData\0\0data\0sendDataTable\0"
@@ -109,7 +112,8 @@ QT_MOC_LITERAL(63, 528, 9) // "readyRead"
     "state\0receiveLastStateDevice\0deviceIds\0"
     "addDeviceId\0receiveRSSIConfig\0rssi1m\0"
     "rssi2m\0receiveLocatorParams\0x4\0y4\0z4\0"
-    "x5\0y5\0z5\0x6\0y6\0z6\0x7\0y7\0z7\0readyRead"
+    "x5\0y5\0z5\0x6\0y6\0z6\0x7\0y7\0z7\0changeGatewayMAC\0"
+    "gateway1MAC\0gateway2MAC\0readyRead"
 };
 #undef QT_MOC_LITERAL
 
@@ -119,7 +123,7 @@ static const uint qt_meta_data_Processor[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      17,   14, // methods
+      18,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -127,25 +131,26 @@ static const uint qt_meta_data_Processor[] = {
        6,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   99,    2, 0x06 /* Public */,
-       4,    5,  102,    2, 0x06 /* Public */,
-      10,    5,  113,    2, 0x06 /* Public */,
-      15,    4,  124,    2, 0x06 /* Public */,
-      16,   20,  133,    2, 0x06 /* Public */,
-      29,    0,  174,    2, 0x06 /* Public */,
+       1,    1,  104,    2, 0x06 /* Public */,
+       4,    5,  107,    2, 0x06 /* Public */,
+      10,    5,  118,    2, 0x06 /* Public */,
+      15,    4,  129,    2, 0x06 /* Public */,
+      16,   20,  138,    2, 0x06 /* Public */,
+      29,    0,  179,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      30,    1,  175,    2, 0x0a /* Public */,
-      32,    0,  178,    2, 0x0a /* Public */,
-      33,    0,  179,    2, 0x0a /* Public */,
-      34,    1,  180,    2, 0x0a /* Public */,
-      37,    2,  183,    2, 0x0a /* Public */,
-      41,    1,  188,    2, 0x0a /* Public */,
-      44,    7,  191,    2, 0x0a /* Public */,
-      46,    1,  206,    2, 0x0a /* Public */,
-      47,    2,  209,    2, 0x0a /* Public */,
-      50,   24,  214,    2, 0x0a /* Public */,
-      63,    0,  263,    2, 0x08 /* Private */,
+      30,    1,  180,    2, 0x0a /* Public */,
+      32,    0,  183,    2, 0x0a /* Public */,
+      33,    0,  184,    2, 0x0a /* Public */,
+      34,    1,  185,    2, 0x0a /* Public */,
+      37,    2,  188,    2, 0x0a /* Public */,
+      41,    1,  193,    2, 0x0a /* Public */,
+      44,    7,  196,    2, 0x0a /* Public */,
+      46,    1,  211,    2, 0x0a /* Public */,
+      47,    2,  214,    2, 0x0a /* Public */,
+      50,   24,  219,    2, 0x0a /* Public */,
+      63,    2,  268,    2, 0x0a /* Public */,
+      66,    0,  273,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    3,
@@ -166,6 +171,7 @@ static const uint qt_meta_data_Processor[] = {
     QMetaType::Void, QMetaType::QString,    5,
     QMetaType::Void, QMetaType::QString, QMetaType::QString,   48,   49,
     QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString,   17,   18,   19,   20,   21,   22,   23,   24,   25,   26,   27,   28,   51,   52,   53,   54,   55,   56,   57,   58,   59,   60,   61,   62,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString,   64,   65,
     QMetaType::Void,
 
        0        // eod
@@ -193,7 +199,8 @@ void Processor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, v
         case 13: _t->addDeviceId((*reinterpret_cast< const QString(*)>(_a[1]))); break;
         case 14: _t->receiveRSSIConfig((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
         case 15: _t->receiveLocatorParams((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4])),(*reinterpret_cast< QString(*)>(_a[5])),(*reinterpret_cast< QString(*)>(_a[6])),(*reinterpret_cast< QString(*)>(_a[7])),(*reinterpret_cast< QString(*)>(_a[8])),(*reinterpret_cast< QString(*)>(_a[9])),(*reinterpret_cast< QString(*)>(_a[10])),(*reinterpret_cast< QString(*)>(_a[11])),(*reinterpret_cast< QString(*)>(_a[12])),(*reinterpret_cast< QString(*)>(_a[13])),(*reinterpret_cast< QString(*)>(_a[14])),(*reinterpret_cast< QString(*)>(_a[15])),(*reinterpret_cast< QString(*)>(_a[16])),(*reinterpret_cast< QString(*)>(_a[17])),(*reinterpret_cast< QString(*)>(_a[18])),(*reinterpret_cast< QString(*)>(_a[19])),(*reinterpret_cast< QString(*)>(_a[20])),(*reinterpret_cast< QString(*)>(_a[21])),(*reinterpret_cast< QString(*)>(_a[22])),(*reinterpret_cast< QString(*)>(_a[23])),(*reinterpret_cast< QString(*)>(_a[24]))); break;
-        case 16: _t->readyRead(); break;
+        case 16: _t->changeGatewayMAC((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2]))); break;
+        case 17: _t->readyRead(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -269,13 +276,13 @@ int Processor::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 17)
+        if (_id < 18)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 17;
+        _id -= 18;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 17)
+        if (_id < 18)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 17;
+        _id -= 18;
     }
     return _id;
 }

@@ -12,6 +12,7 @@
 #define SETTING_FILE                                "setting.ini"
 #define LOCATOR_PARAMS_FILE                         "locator_params.ini"
 #define RSSI_FILE                                   "rssi.ini"
+#define GATEWAY_MAC_FILE                            "gateway_mac.ini"
 
 #define INSTANTANEOUS_RSSI_FILE                     "/Test AoA/INSTANTANEOUS_RSSI_%1_%2.csv"
 
@@ -53,5 +54,8 @@
 
 #define AOA_PRIORITY_OVER_CONVENIENT
 #define SINGLE_OVER_TWO_LOCATORS
+
+#define DEFAULT_GATEWAY_1_MAC                           "AC233FC0CD2A"
+#define DEFAULT_GATEWAY_2_MAC                           "AAAAAAAAAAAA"
 
 #endif // CONSTANTS_H

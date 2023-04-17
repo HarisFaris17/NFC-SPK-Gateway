@@ -33,6 +33,8 @@ public:
 
     void parseRSSI(QString &RSSI1m, QString &RSSI2m);
 
+    void parseGatewayMac(QString &gateway1MAC, QString &gateway2MAC);
+
 //    bool parseTCPServerInfo(QString &ipAddress, QString &port);
 //    void saveIQ();
     void saveDatabaseConfig(QString host,
@@ -73,6 +75,8 @@ public:
     bool saveRSSI(QString &RSSI1m, QString &RSSI2m);
 
     bool saveCalculatorData(const QByteArray &data);
+
+    bool saveGatewayMAC(const QString gateway1MAC, const QString gateway2MAC);
 
 private:
     QByteArray parseData(QByteArray &data,int &index, bool &isSuccess);

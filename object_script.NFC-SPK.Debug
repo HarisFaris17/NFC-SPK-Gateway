@@ -12,6 +12,7 @@ INPUT(
 ./debug\settinglocator.o
 ./debug\adddevice.o
 ./debug\coordinatesystem.o
+./debug\andonprocessor.o
 ./debug\moc_mainwindow.o
 ./debug\moc_tcpserver.o
 ./debug\moc_tcp.o
@@ -22,4 +23,5 @@ INPUT(
 ./debug\moc_settinglocator.o
 ./debug\moc_adddevice.o
 ./debug\moc_coordinatesystem.o
+./debug\moc_andonprocessor.o
 );

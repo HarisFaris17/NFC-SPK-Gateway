@@ -40,17 +40,26 @@ public:
     QHBoxLayout *horizontalLayout_7;
     QTabWidget *tabWidget;
     QWidget *tab;
-    QHBoxLayout *horizontalLayout_4;
+    QHBoxLayout *horizontalLayout_18;
     QVBoxLayout *verticalLayout;
     QSpacerItem *verticalSpacer_2;
+    QGroupBox *groupBox_5;
+    QHBoxLayout *horizontalLayout_4;
+    QGroupBox *groupBox_6;
+    QFormLayout *formLayout_3;
+    QLabel *label_3;
+    QLineEdit *gateway1MACLineEdit;
+    QLabel *label_9;
+    QLineEdit *gateway2MACLineEdit;
+    QPushButton *saveGatewayMACPushButton;
     QGroupBox *groupBox_2;
     QHBoxLayout *horizontalLayout;
     QGroupBox *groupBox;
     QFormLayout *formLayout_2;
-    QLabel *label;
-    QLineEdit *ipAddressTCPLineEdit;
-    QLabel *label_2;
     QLineEdit *portTCPLineEdit;
+    QLabel *label_2;
+    QLineEdit *ipAddressTCPLineEdit;
+    QLabel *label;
     QPushButton *connectTCPPushButton;
     QGroupBox *groupBox_3;
     QHBoxLayout *horizontalLayout_5;
@@ -84,6 +93,14 @@ public:
     QPushButton *settingPushButton;
     QTableWidget *tableWidgetCounting;
     QTableWidget *tableWidgetHistoryCounting;
+    QWidget *tab_3;
+    QVBoxLayout *verticalLayout_4;
+    QGroupBox *groupBox_7;
+    QHBoxLayout *horizontalLayout_8;
+    QTableWidget *tableWidget;
+    QGroupBox *groupBox_8;
+    QHBoxLayout *horizontalLayout_19;
+    QTableWidget *tableWidget_2;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -103,16 +120,59 @@ public:
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
         tab = new QWidget();
         tab->setObjectName(QStringLiteral("tab"));
-        horizontalLayout_4 = new QHBoxLayout(tab);
-        horizontalLayout_4->setSpacing(6);
-        horizontalLayout_4->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
+        horizontalLayout_18 = new QHBoxLayout(tab);
+        horizontalLayout_18->setSpacing(6);
+        horizontalLayout_18->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_18->setObjectName(QStringLiteral("horizontalLayout_18"));
         verticalLayout = new QVBoxLayout();
         verticalLayout->setSpacing(6);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout->addItem(verticalSpacer_2);
+
+        groupBox_5 = new QGroupBox(tab);
+        groupBox_5->setObjectName(QStringLiteral("groupBox_5"));
+        horizontalLayout_4 = new QHBoxLayout(groupBox_5);
+        horizontalLayout_4->setSpacing(6);
+        horizontalLayout_4->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
+        groupBox_6 = new QGroupBox(groupBox_5);
+        groupBox_6->setObjectName(QStringLiteral("groupBox_6"));
+        formLayout_3 = new QFormLayout(groupBox_6);
+        formLayout_3->setSpacing(6);
+        formLayout_3->setContentsMargins(11, 11, 11, 11);
+        formLayout_3->setObjectName(QStringLiteral("formLayout_3"));
+        label_3 = new QLabel(groupBox_6);
+        label_3->setObjectName(QStringLiteral("label_3"));
+
+        formLayout_3->setWidget(0, QFormLayout::LabelRole, label_3);
+
+        gateway1MACLineEdit = new QLineEdit(groupBox_6);
+        gateway1MACLineEdit->setObjectName(QStringLiteral("gateway1MACLineEdit"));
+
+        formLayout_3->setWidget(0, QFormLayout::FieldRole, gateway1MACLineEdit);
+
+        label_9 = new QLabel(groupBox_6);
+        label_9->setObjectName(QStringLiteral("label_9"));
+
+        formLayout_3->setWidget(1, QFormLayout::LabelRole, label_9);
+
+        gateway2MACLineEdit = new QLineEdit(groupBox_6);
+        gateway2MACLineEdit->setObjectName(QStringLiteral("gateway2MACLineEdit"));
+
+        formLayout_3->setWidget(1, QFormLayout::FieldRole, gateway2MACLineEdit);
+
+
+        horizontalLayout_4->addWidget(groupBox_6);
+
+        saveGatewayMACPushButton = new QPushButton(groupBox_5);
+        saveGatewayMACPushButton->setObjectName(QStringLiteral("saveGatewayMACPushButton"));
+
+        horizontalLayout_4->addWidget(saveGatewayMACPushButton);
+
+
+        verticalLayout->addWidget(groupBox_5);
 
         groupBox_2 = new QGroupBox(tab);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
@@ -126,26 +186,30 @@ public:
         formLayout_2->setSpacing(6);
         formLayout_2->setContentsMargins(11, 11, 11, 11);
         formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
-        label = new QLabel(groupBox);
-        label->setObjectName(QStringLiteral("label"));
+        portTCPLineEdit = new QLineEdit(groupBox);
+        portTCPLineEdit->setObjectName(QStringLiteral("portTCPLineEdit"));
 
-        formLayout_2->setWidget(0, QFormLayout::LabelRole, label);
-
-        ipAddressTCPLineEdit = new QLineEdit(groupBox);
-        ipAddressTCPLineEdit->setObjectName(QStringLiteral("ipAddressTCPLineEdit"));
-
-        formLayout_2->setWidget(0, QFormLayout::FieldRole, ipAddressTCPLineEdit);
+        formLayout_2->setWidget(1, QFormLayout::FieldRole, portTCPLineEdit);
 
         label_2 = new QLabel(groupBox);
         label_2->setObjectName(QStringLiteral("label_2"));
 
         formLayout_2->setWidget(1, QFormLayout::LabelRole, label_2);
 
-        portTCPLineEdit = new QLineEdit(groupBox);
-        portTCPLineEdit->setObjectName(QStringLiteral("portTCPLineEdit"));
+        ipAddressTCPLineEdit = new QLineEdit(groupBox);
+        ipAddressTCPLineEdit->setObjectName(QStringLiteral("ipAddressTCPLineEdit"));
 
-        formLayout_2->setWidget(1, QFormLayout::FieldRole, portTCPLineEdit);
+        formLayout_2->setWidget(0, QFormLayout::FieldRole, ipAddressTCPLineEdit);
 
+        label = new QLabel(groupBox);
+        label->setObjectName(QStringLiteral("label"));
+
+        formLayout_2->setWidget(0, QFormLayout::LabelRole, label);
+
+        label->raise();
+        ipAddressTCPLineEdit->raise();
+        label_2->raise();
+        portTCPLineEdit->raise();
 
         horizontalLayout->addWidget(groupBox);
 
@@ -235,7 +299,7 @@ public:
         verticalLayout->addItem(verticalSpacer_3);
 
 
-        horizontalLayout_4->addLayout(verticalLayout);
+        horizontalLayout_18->addLayout(verticalLayout);
 
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setSpacing(6);
@@ -272,7 +336,7 @@ public:
         verticalLayout_2->addWidget(console);
 
 
-        horizontalLayout_4->addLayout(verticalLayout_2);
+        horizontalLayout_18->addLayout(verticalLayout_2);
 
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
@@ -453,6 +517,78 @@ public:
         verticalLayout_3->addWidget(tableWidgetHistoryCounting);
 
         tabWidget->addTab(tab_2, QString());
+        tab_3 = new QWidget();
+        tab_3->setObjectName(QStringLiteral("tab_3"));
+        verticalLayout_4 = new QVBoxLayout(tab_3);
+        verticalLayout_4->setSpacing(6);
+        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
+        groupBox_7 = new QGroupBox(tab_3);
+        groupBox_7->setObjectName(QStringLiteral("groupBox_7"));
+        horizontalLayout_8 = new QHBoxLayout(groupBox_7);
+        horizontalLayout_8->setSpacing(6);
+        horizontalLayout_8->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
+        tableWidget = new QTableWidget(groupBox_7);
+        if (tableWidget->columnCount() < 5)
+            tableWidget->setColumnCount(5);
+        QTableWidgetItem *__qtablewidgetitem40 = new QTableWidgetItem();
+        __qtablewidgetitem40->setFont(font);
+        tableWidget->setHorizontalHeaderItem(0, __qtablewidgetitem40);
+        QTableWidgetItem *__qtablewidgetitem41 = new QTableWidgetItem();
+        __qtablewidgetitem41->setFont(font);
+        tableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem41);
+        QTableWidgetItem *__qtablewidgetitem42 = new QTableWidgetItem();
+        __qtablewidgetitem42->setFont(font);
+        tableWidget->setHorizontalHeaderItem(2, __qtablewidgetitem42);
+        QTableWidgetItem *__qtablewidgetitem43 = new QTableWidgetItem();
+        __qtablewidgetitem43->setFont(font);
+        tableWidget->setHorizontalHeaderItem(3, __qtablewidgetitem43);
+        QTableWidgetItem *__qtablewidgetitem44 = new QTableWidgetItem();
+        __qtablewidgetitem44->setFont(font);
+        tableWidget->setHorizontalHeaderItem(4, __qtablewidgetitem44);
+        tableWidget->setObjectName(QStringLiteral("tableWidget"));
+
+        horizontalLayout_8->addWidget(tableWidget);
+
+
+        verticalLayout_4->addWidget(groupBox_7);
+
+        groupBox_8 = new QGroupBox(tab_3);
+        groupBox_8->setObjectName(QStringLiteral("groupBox_8"));
+        horizontalLayout_19 = new QHBoxLayout(groupBox_8);
+        horizontalLayout_19->setSpacing(6);
+        horizontalLayout_19->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_19->setObjectName(QStringLiteral("horizontalLayout_19"));
+        tableWidget_2 = new QTableWidget(groupBox_8);
+        if (tableWidget_2->columnCount() < 6)
+            tableWidget_2->setColumnCount(6);
+        QTableWidgetItem *__qtablewidgetitem45 = new QTableWidgetItem();
+        __qtablewidgetitem45->setFont(font);
+        tableWidget_2->setHorizontalHeaderItem(0, __qtablewidgetitem45);
+        QTableWidgetItem *__qtablewidgetitem46 = new QTableWidgetItem();
+        __qtablewidgetitem46->setFont(font);
+        tableWidget_2->setHorizontalHeaderItem(1, __qtablewidgetitem46);
+        QTableWidgetItem *__qtablewidgetitem47 = new QTableWidgetItem();
+        __qtablewidgetitem47->setFont(font);
+        tableWidget_2->setHorizontalHeaderItem(2, __qtablewidgetitem47);
+        QTableWidgetItem *__qtablewidgetitem48 = new QTableWidgetItem();
+        __qtablewidgetitem48->setFont(font);
+        tableWidget_2->setHorizontalHeaderItem(3, __qtablewidgetitem48);
+        QTableWidgetItem *__qtablewidgetitem49 = new QTableWidgetItem();
+        __qtablewidgetitem49->setFont(font);
+        tableWidget_2->setHorizontalHeaderItem(4, __qtablewidgetitem49);
+        QTableWidgetItem *__qtablewidgetitem50 = new QTableWidgetItem();
+        __qtablewidgetitem50->setFont(font);
+        tableWidget_2->setHorizontalHeaderItem(5, __qtablewidgetitem50);
+        tableWidget_2->setObjectName(QStringLiteral("tableWidget_2"));
+
+        horizontalLayout_19->addWidget(tableWidget_2);
+
+
+        verticalLayout_4->addWidget(groupBox_8);
+
+        tabWidget->addTab(tab_3, QString());
 
         horizontalLayout_7->addWidget(tabWidget);
 
@@ -470,7 +606,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -479,10 +615,15 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", Q_NULLPTR));
+        groupBox_5->setTitle(QApplication::translate("MainWindow", "Gateway MAC", Q_NULLPTR));
+        groupBox_6->setTitle(QString());
+        label_3->setText(QApplication::translate("MainWindow", "Gateway 1 MAC", Q_NULLPTR));
+        label_9->setText(QApplication::translate("MainWindow", "Gateway 2 MAC", Q_NULLPTR));
+        saveGatewayMACPushButton->setText(QApplication::translate("MainWindow", "Save", Q_NULLPTR));
         groupBox_2->setTitle(QApplication::translate("MainWindow", "TCP Server", Q_NULLPTR));
         groupBox->setTitle(QString());
-        label->setText(QApplication::translate("MainWindow", "IP Address", Q_NULLPTR));
         label_2->setText(QApplication::translate("MainWindow", "Port", Q_NULLPTR));
+        label->setText(QApplication::translate("MainWindow", "IP Address", Q_NULLPTR));
         connectTCPPushButton->setText(QApplication::translate("MainWindow", "Connect", Q_NULLPTR));
         groupBox_3->setTitle(QApplication::translate("MainWindow", "Database", Q_NULLPTR));
         groupBox_4->setTitle(QString());
@@ -578,7 +719,32 @@ public:
         ___qtablewidgetitem38->setText(QApplication::translate("MainWindow", "Locator3 Z", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem39 = tableWidgetHistoryCounting->horizontalHeaderItem(19);
         ___qtablewidgetitem39->setText(QApplication::translate("MainWindow", "Timestamp", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Table", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Coordinate", Q_NULLPTR));
+        groupBox_7->setTitle(QApplication::translate("MainWindow", "Device", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem40 = tableWidget->horizontalHeaderItem(0);
+        ___qtablewidgetitem40->setText(QApplication::translate("MainWindow", "Device ID", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem41 = tableWidget->horizontalHeaderItem(1);
+        ___qtablewidgetitem41->setText(QApplication::translate("MainWindow", "Call 1", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem42 = tableWidget->horizontalHeaderItem(2);
+        ___qtablewidgetitem42->setText(QApplication::translate("MainWindow", "Call 2", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem43 = tableWidget->horizontalHeaderItem(3);
+        ___qtablewidgetitem43->setText(QApplication::translate("MainWindow", "Call 3", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem44 = tableWidget->horizontalHeaderItem(4);
+        ___qtablewidgetitem44->setText(QApplication::translate("MainWindow", "Call 4", Q_NULLPTR));
+        groupBox_8->setTitle(QApplication::translate("MainWindow", "Data", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem45 = tableWidget_2->horizontalHeaderItem(0);
+        ___qtablewidgetitem45->setText(QApplication::translate("MainWindow", "ID", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem46 = tableWidget_2->horizontalHeaderItem(1);
+        ___qtablewidgetitem46->setText(QApplication::translate("MainWindow", "Device ID", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem47 = tableWidget_2->horizontalHeaderItem(2);
+        ___qtablewidgetitem47->setText(QApplication::translate("MainWindow", "Call", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem48 = tableWidget_2->horizontalHeaderItem(3);
+        ___qtablewidgetitem48->setText(QApplication::translate("MainWindow", "Date Time", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem49 = tableWidget_2->horizontalHeaderItem(4);
+        ___qtablewidgetitem49->setText(QApplication::translate("MainWindow", "Date Arrival", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem50 = tableWidget_2->horizontalHeaderItem(5);
+        ___qtablewidgetitem50->setText(QApplication::translate("MainWindow", "Date Completed", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "Andon", Q_NULLPTR));
     } // retranslateUi
 
 };

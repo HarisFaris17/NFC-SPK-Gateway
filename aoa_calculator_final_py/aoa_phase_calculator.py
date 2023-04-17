@@ -13,6 +13,9 @@ from numpy import std, cos, sin, sqrt, absolute, arccos, log, float64, pi
 from aoa_constants import *
 from aoa_communication import *
 from aoa_common import *
+from aoa_smoothing import *
+
+from doatools.doatools.estimation import source_number, esprit, preprocessing
 
 # protect the phase so that it is in range [-pi, pi]
 # in this scenario it is not possible that between two phase difference more than pi, since that will represent undersampling (F_SAMPLING < 1/2 Freq), hence we don't have to consider it
@@ -152,6 +155,41 @@ def mag_reshape(mag_array):
 
     return reshaped_mag_array
 
+from scipy.optimize import least_squares
+import matplotlib.pyplot as pyplot 
+
+
+
+def calculate_phase_diff_reference_2(reference_i_array : ndarray, reference_q_array : ndarray):
+    # this is the list of offset freq not the carrier freq (2.4** GHz radio freq)
+    x = np.arange(NUMBER_OF_REFERENCE_IQ)
+    beta_init_i = np.array([max(reference_i_array.min(), reference_i_array.max(), key=abs), 1.57, 1])
+    nls_i_param = least_squares(fun = calc_residual, x0 = beta_init_i, args = (x, reference_i_array), method = 'lm', verbose = 0)
+
+    beta_init_q = np.array([max(reference_q_array.min(), reference_q_array.max(), key=abs), 1.57, 1])
+    nls_q_param = least_squares(fun = calc_residual, x0 = beta_init_q, args = (x, reference_q_array), method = 'lm', verbose = 0)
+
+    # amp, omega, phase_offset  = nls_i_param.x
+
+    # i_pred = calc_signal_mean()
+    x_space = np.linspace(0, NUMBER_OF_REFERENCE_IQ)
+    # plt.plot(x_space, calc_signal_mean(nls_i_param.x, x_space), 'ro-')
+    # plt.plot(x, reference_i_array, 'go-')
+    # plt.show()
+    if nls_i_param.optimality > nls_q_param.optimality:
+        phase_diff = nls_i_param.x[1]
+    else:
+        phase_diff = nls_q_param.x[1]
+
+    return phase_diff
+
+def calc_signal_mean(beta, x):
+    return beta[0] * sin(beta[1] * x + beta[2])
+
+def calc_residual(beta, x, y_obs):
+    y_pred = calc_signal_mean(beta, x)
+    r = y_pred - np.array(y_obs)
+    return r
 
 from numpy import isnan, ceil, nan
 
@@ -333,23 +371,39 @@ def calculate_angle_esprit(received_data, wave_length, signal_dimension = 1):
 
 def calculate_angle_tls_esprit(received_data, wave_length, signal_dimension = 1):
     received_data_t = received_data.T
-    R = corr_matrix_estimate(received_data_t, imp = "fast")
-    R = spatial_smoothing(received_data.T, 3, direction = "forward-backward")
+    # R = corr_matrix_estimate(received_data_t, imp = "fast")
+    # R = spatial_smoothing(received_data_t, SIZE_OF_SUBARRAY, direction = "forward-backward")
+
+    R = spatial_smoothing_ess_ss(received_data, 2)
+    # R = spatial_smoothing(received_data_t, 3, direction = "forward-backward")
     # R_11 = corr_matrix_estimate(received_data_t[:, :-1], imp = "fast")
     # R_22 = corr_matrix_estimate(received_data_t[:, 1:], imp = "fast")
     # write_protocol_data(CMD_INFO, f"Received data shape {received_data.shape}, R11 {R_11}, R22 {R_22}")
     # calculated_angle = DOA_TLS_ESPRIT_2(R_11, R_22, 1, wave_length)
     # num_of_signals = count_num_of_signals_mdl(R, received_data.shape[1])
     # num_of_signals = estimate_sig_dim(R)
-    num_of_signals = count_num_of_signals_aic(R, received_data.shape[1])
-    write_protocol_data(CMD_INFO, f"NUM_OF_SIGNALS {num_of_signals}")
-    calculated_angle, eigen_values, ei = DOA_TLS_ESPRIT_3(R, signal_dimension, wave_length)
+    # num_of_signals = source_number.sorte(R)
+    # write_protocol_data(CMD_INFO, f"NUM_OF_SIGNALS {num_of_signals}")
+    calculated_angle, eigen_values, ei = DOA_TLS_ESPRIT_3(R, 1, wave_length)
+    write_protocol_data(CMD_INFO, f"ANGLEEEEE ESS_SS {calculated_angle}")
+
+    R = spatial_smoothing(received_data_t, 3, direction = "forward-backward")
+    calculated_angle1, eigen_values, ei = DOA_TLS_ESPRIT_3(R, 1, wave_length)
+
+    R = corr_matrix_estimate(received_data_t, imp = "fast")
+    calculated_angle2, eigen_values, ei = DOA_TLS_ESPRIT_3(R, 1, wave_length)
+
+    R = preprocessing.spatial_smooth(R, 2, True)
+    calculated_angle3, eigen_values, ei = DOA_TLS_ESPRIT_3(R, 1, wave_length)
+    # calcula
+    # esprit_object = esprit.Esprit1D(0.12)
+    # calculated_angle = esprit_object.estimate(R, 1, 0.05, formulation = "tls", row_weights = 'none')
     # calculated_angle = DOA_TLS_ESPRIT(received_data_t, 1, wave_length)
     # tls_esprit_file = open(os.path.dirname(__file__) + TLS_ESPRIT_ANGLE_FILE, mode = "a")
     # tls_esprit_file.write(f"axis {axis} {calculated_angle}\n")
     # tls_esprit_file.close()
 
-    return calculated_angle, eigen_values, ei
+    return calculated_angle, calculated_angle1, calculated_angle2, calculated_angle3
 
 def calculate_angle_root_music(received_data, wave_length, axis):
     R = corr_matrix_estimate(received_data.T, imp = "fast")
@@ -358,6 +412,19 @@ def calculate_angle_root_music(received_data, wave_length, axis):
     esprit_file.write(f"axis {axis} {angles}\n")
     esprit_file.close()
     
+def calculate_angle_pdda(received_data, wave_length):
+    h = received_data[:1, :]
+    H = received_data[1:, :]
+
+    p = (h @ H.conj().T) / (h @ h.conj().T)
+
+    e = np.insert(p.flatten(), 0, 1)
+
+    angles_space = np.linspace(0, np.pi, 180)
+
+    for angle in angles_space:
+        
+
 
 def calculate_distance(rssi):
     rssi_2d = [[rssi]]
@@ -594,7 +661,7 @@ def DOA_TLS_ESPRIT_3(correlation_matrix, num_of_signal_sources, wave_length) :
     eigen_values, _ = LA.eig(mul)
     write_protocol_data(CMD_INFO, f"E_s1 {Es_1} \n Es_2 {Es_2} \n E_c {E_c} \n E_12 {E_12.shape} {E_12}\n E_22 {E_22.shape} {E_22} \n eigen_values {eigen_values}")
     # return np.arccos(np.angle(eigen_values)/(np.pi * 2 * d / wave_length)), signal_eigen_values, np.arccos(tweak_angle(np.angle(eigen_values), 10, 0)/(np.pi * 2 * d / wave_length))
-    return np.arccos(tweak_angle(np.angle(eigen_values), 10, 0)/(np.pi * 2 * d / wave_length)), signal_eigen_values, np.arccos(tweak_angle(np.angle(eigen_values), 10, 0)/(np.pi * 2 * d / wave_length))
+    return np.arccos(np.angle(eigen_values)/(np.pi * 2 * d / wave_length)), signal_eigen_values, np.arccos(tweak_angle(np.angle(eigen_values), 10, 0)/(np.pi * 2 * d / wave_length))
 
 from sympy import solve, poly
 from sympy.abc import z

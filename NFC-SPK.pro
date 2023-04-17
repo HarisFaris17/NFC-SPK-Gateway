@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     common.cpp \
     settinglocator.cpp \
     adddevice.cpp \
-    coordinatesystem.cpp
+    coordinatesystem.cpp \
+    andonprocessor.cpp
 
 HEADERS  += mainwindow.h \
     tcpserver.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     settinglocator.h \
     adddevice.h \
     coordinatesystem.h \
-    devicedatacontainer.h
+    devicedatacontainer.h \
+    andonprocessor.h
 
 FORMS    += mainwindow.ui \
     settinglocator.ui \
