@@ -7,6 +7,7 @@ from itertools import combinations
 from aoa_constants import *
 from aoa_phase_calculator import *
 from aoa_kalman import *
+from aoa_angles_method_2d import *
 
 import types 
 
@@ -108,16 +109,6 @@ except:
     write_protocol_data(command = CMD_ERROR, body = body_error)
 
 
-# try:
-#     z_file = open(os.path.dirname(__file__) + Z_FILE, 'r')
-
-#     z_value = eval(z_file.read())
-#     write_protocol_data(CMD_INFO, f"Z value = {Z}")
-# except:
-#     body_error = f"The Z value from file {Z_FILE} failed to be read"
-#     write_protocol_data(CMD_ERROR, body_error)
-##############################################################
-
 from aoa_angles_method import *
 
 angle_buffer = {}
@@ -201,13 +192,18 @@ thread_location_aoa_calculator_L_shaped_cumul_phase_diff.start()
 thread_location_aoa_calculator_cumul_phase_diff_cumul_angle_buffer = Thread(target = location_aoa_calculator_cumul_phase_diff_cumul_angle_buffer, args = (new_angles_cumul_phase_diff_cumul_angle_buffer_queue, angle_buffer))
 thread_location_aoa_calculator_cumul_phase_diff_cumul_angle_buffer.start()
 
+###########################################################
+new_angles_2d = Queue()
+thread_music_2d = Thread(target = music_2d, args = (new_angles_2d, diff_phase_buffer, mag_buffer))
+thread_music_2d.start()
+
 ############################################################
 def delete_buffers(mac, locator_idx):
     write_protocol_data(CMD_INFO, f"DELETINGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG {mac} {locator_idx}")
     if mac in diff_phase_buffer.keys():
         if locator_idx in diff_phase_buffer[mac].keys():
             del diff_phase_buffer[mac][locator_idx]
-            del angle_buffer[mac][locator_idx]
+            if not MODE_12_ANT : del angle_buffer[mac][locator_idx]
             del batch_count[mac][locator_idx]
 
 def new_or_update_timer(mac, locator_idx):
@@ -306,6 +302,7 @@ def sub_main_thread(buffered_data):
                 distance = calculate_distance(rssi)
 
 
+
                 body_info = f"Freq carrier : {freq_carrier}\nrssi : {rssi}\nmac : {mac}\nLocator index : {locator_idx}\ndistance : {distance}\nIQ : {iq}"
                 write_protocol_data(command = CMD_INFO, body = body_info)
 
@@ -328,6 +325,9 @@ def sub_main_thread(buffered_data):
 
                 if USE_NLS_PHASE_DIFF:
                     phase_diff_mean = calculate_phase_diff_reference_2(iq[:2 * NUMBER_OF_REFERENCE_IQ:2], iq[1 : 2 * NUMBER_OF_REFERENCE_IQ + 1 : 2])
+                    if phase_diff_mean < np.pi/2 - 0.2 or phase_diff_mean > np.pi/2 + 0.2 :
+                        phase_diff_array = calculate_phase_diff_reference(reference_phase_array)
+                        phase_diff_mean = np.mean(phase_diff_array)
                 else:
                     phase_diff_array = calculate_phase_diff_reference(reference_phase_array)
                     phase_diff_mean = np.mean(phase_diff_array)
@@ -345,40 +345,48 @@ def sub_main_thread(buffered_data):
                 body_info = "Phase Difference Mean {phase_diff_mean}".format(phase_diff_mean = phase_diff_mean)
                 write_protocol_data(command = CMD_INFO, body = body_info)
 
-                # diff_phase = diff_actual_to_predict_phase(phase_array, phase_diff_mean)
-                # body_info = "diff phase {diff_phase}".format(diff_phase = diff_phase)
-                # write_protocol_data(command = CMD_INFO, body = body_info)
-                
-                # diff_phase = diff_actual_to_predict_phase_splitted(phase_array, phase_diff_mean)
-                diff_phase = diff_actual_to_predict_phase_splitted_2(phase_array, phase_diff_mean)
-                reshaped_mag = mag_reshape(mag_array)
-                write_protocol_data(CMD_INFO, f"diff phase {diff_phase}")
-
                 if mac not in diff_phase_buffer:
                     diff_phase_buffer[mac] = dict()
                     mag_buffer[mac] = dict()
 
-                if locator_idx not in diff_phase_buffer[mac]:
-                    diff_phase_buffer[mac][locator_idx] = diff_phase
-                    mag_buffer[mac][locator_idx] = reshaped_mag
-                else:
-                    num_of_IQs_per_axis_per_locator_per_batch = diff_phase.shape[2]
-                    num_of_IQs = diff_phase_buffer[mac][locator_idx].shape[2]
+                if MODE_12_ANT:
+                    diff_phase = diff_actual_to_predict_phase_12_ant_mode(phase_array, phase_diff_mean)
+                    reshaped_mag = mag_reshape_12_ant_mode(mag_array)
 
-                    write_protocol_data(CMD_INFO, f"Num of diff phase and magnitude of mac {mac} and locator {locator_idx} : {num_of_IQs}, {num_of_IQs_per_axis_per_locator_per_batch}")
-                        
-                    if num_of_IQs / num_of_IQs_per_axis_per_locator_per_batch > MAX_IQS_BUNDLE:
-                        diff_phase_buffer[mac][locator_idx] = np.delete(diff_phase_buffer[mac][locator_idx], np.s_[:num_of_IQs_per_axis_per_locator_per_batch], axis = 2)
-                        mag_buffer[mac][locator_idx] = np.delete(mag_buffer[mac][locator_idx], np.s_[:num_of_IQs_per_axis_per_locator_per_batch], axis = 2)
-                    diff_phase_buffer[mac][locator_idx] = np.append(diff_phase_buffer[mac][locator_idx], diff_phase, axis = 2)
-                    mag_buffer[mac][locator_idx] = np.append(mag_buffer[mac][locator_idx], reshaped_mag, axis = 2)
+                    if locator_idx not in diff_phase_buffer[mac]:
+                        diff_phase_buffer[mac][locator_idx] = diff_phase
+                        mag_buffer[mac][locator_idx] = reshaped_mag
+                    else:
+                        num_of_IQs_per_axis_per_locator_per_batch = diff_phase.shape[1]
+                        num_of_IQs = diff_phase_buffer[mac][locator_idx].shape[1]
 
-                angle_elevation = np.zeros(NUM_OF_AXIS, float64)
-                continue_to_process = True
-                
-                angle_elevation_music = np.zeros(NUM_OF_AXIS, float64)
-                angle_elevation_music_smoothing = np.zeros(NUM_OF_AXIS, float64)
-                num_iq_sets_per_axis_per_array = diff_phase.shape[2]
+                        write_protocol_data(CMD_INFO, f"Num of diff phase and magnitude of mac {mac} and locator {locator_idx} : {num_of_IQs}, {num_of_IQs_per_axis_per_locator_per_batch}")
+                            
+                        if num_of_IQs / num_of_IQs_per_axis_per_locator_per_batch > MAX_IQS_BUNDLE:
+                            diff_phase_buffer[mac][locator_idx] = np.delete(diff_phase_buffer[mac][locator_idx], np.s_[:num_of_IQs_per_axis_per_locator_per_batch], axis = 1)
+                            mag_buffer[mac][locator_idx] = np.delete(mag_buffer[mac][locator_idx], np.s_[:num_of_IQs_per_axis_per_locator_per_batch], axis = 1)
+                        diff_phase_buffer[mac][locator_idx] = np.append(diff_phase_buffer[mac][locator_idx], diff_phase, axis = 1)
+                        mag_buffer[mac][locator_idx] = np.append(mag_buffer[mac][locator_idx], reshaped_mag, axis = 1)
+
+                else :
+                    diff_phase = diff_actual_to_predict_phase_splitted_2(phase_array, phase_diff_mean)
+                    reshaped_mag = mag_reshape(mag_array)
+                    write_protocol_data(CMD_INFO, f"diff phase {diff_phase}")
+
+                    if locator_idx not in diff_phase_buffer[mac]:
+                        diff_phase_buffer[mac][locator_idx] = diff_phase
+                        mag_buffer[mac][locator_idx] = reshaped_mag
+                    else:
+                        num_of_IQs_per_axis_per_locator_per_batch = diff_phase.shape[2]
+                        num_of_IQs = diff_phase_buffer[mac][locator_idx].shape[2]
+
+                        write_protocol_data(CMD_INFO, f"Num of diff phase and magnitude of mac {mac} and locator {locator_idx} : {num_of_IQs}, {num_of_IQs_per_axis_per_locator_per_batch}")
+                            
+                        if num_of_IQs / num_of_IQs_per_axis_per_locator_per_batch > MAX_IQS_BUNDLE:
+                            diff_phase_buffer[mac][locator_idx] = np.delete(diff_phase_buffer[mac][locator_idx], np.s_[:num_of_IQs_per_axis_per_locator_per_batch], axis = 2)
+                            mag_buffer[mac][locator_idx] = np.delete(mag_buffer[mac][locator_idx], np.s_[:num_of_IQs_per_axis_per_locator_per_batch], axis = 2)
+                        diff_phase_buffer[mac][locator_idx] = np.append(diff_phase_buffer[mac][locator_idx], diff_phase, axis = 2)
+                        mag_buffer[mac][locator_idx] = np.append(mag_buffer[mac][locator_idx], reshaped_mag, axis = 2)
 
                 if mac not in new_angle_queue:
                     # set (himpunan in bahasa) all the locator that involved in catching certain mac in this batch
@@ -386,6 +394,11 @@ def sub_main_thread(buffered_data):
                 new_angle_queue[mac].add(locator_idx)
 
                 if not CALCULATE_ONLY_CUMUL_PHASE_DIFF:
+                    angle_elevation_music = np.zeros(NUM_OF_AXIS, float64)
+                    angle_elevation_music_smoothing = np.zeros(NUM_OF_AXIS, float64)
+                    angle_elevation = np.zeros(NUM_OF_AXIS, float64)
+                    continue_to_process = True
+                    num_iq_sets_per_axis_per_array = diff_phase.shape[2]
                     for axis in range(NUM_OF_AXIS):
                         diff_phase_per_axis = diff_phase[axis]
                         reshaped_mag_per_axis = reshaped_mag[axis]
@@ -487,8 +500,6 @@ def sub_main_thread(buffered_data):
                 for locator_idx in locator_idx_set:
                     batch_count[mac][locator_idx] = 0
                     new_or_update_timer(mac, locator_idx)
-                # else:
-                #     batch_count[mac] = {locator_idx : 0 for locator_idx in locator_idx_set}
 
             list_delete = {}
             for mac in batch_count.keys():
@@ -507,11 +518,14 @@ def sub_main_thread(buffered_data):
             write_protocol_data(CMD_INFO, f"Current angle buffer {angle_buffer}, current batch count {batch_count}")
             write_protocol_data(CMD_INFO, f"New angle from {new_angle_queue}")
 
-            # new_angles_from_waiting_per_batch_queue.put(new_angle_queue) 
-            new_angles_to_calculated_cumul_phase_diff_per_locator_queue.put(new_angle_queue)
-            new_angles_to_calculated_cumul_phase_diff_per_locator_esprit_queue.put(new_angle_queue)     
-            new_angles_cumul_phase_diff_multiple_locator_queue.put(new_angle_queue) 
-            new_angles_L_shaped_cumul_phase_diff.put(new_angle_queue)
+            if MODE_12_ANT:
+                new_angles_2d.put(new_angle_queue)
+            else :
+                # new_angles_from_waiting_per_batch_queue.put(new_angle_queue) 
+                new_angles_to_calculated_cumul_phase_diff_per_locator_queue.put(new_angle_queue)
+                new_angles_to_calculated_cumul_phase_diff_per_locator_esprit_queue.put(new_angle_queue)     
+                new_angles_cumul_phase_diff_multiple_locator_queue.put(new_angle_queue) 
+                new_angles_L_shaped_cumul_phase_diff.put(new_angle_queue)
 
         else :
             body_error = "The command doesn't recognized"

@@ -138,6 +138,24 @@ def diff_actual_to_predict_phase_splitted_2(phase_array, phase_diff_mean):
 
         return diff_phase_array
 
+
+def diff_actual_to_predict_phase_12_ant_mode(phase_array, phase_diff_mean):
+    num_of_iq_per_ant = int((phase_array.shape[0] - NUMBER_OF_REFERENCE_IQ) / 12)
+
+    phase_array_actual = phase_array[NUMBER_OF_REFERENCE_IQ:]
+
+    phase_diff = np.zeros((12, num_of_iq_per_ant))
+    # representing zero phase difference from reference/base ant to reference/base ant
+    phase_diff[0, :] = 0
+    i = 0
+    while i < num_of_iq_per_ant :
+        base_phase = phase_array_actual[i * 12]
+        for k in range(1, 12):
+            phase_diff[k, i] = protect_phase(base_phase + 2 * k * phase_diff_mean - phase_array_actual[i * 12 + k])
+        i += 1
+    
+    return phase_diff
+
 def mag_reshape(mag_array):
     num_of_iq_per_ant_per_axis = int ((mag_array.shape[0] - NUMBER_OF_REFERENCE_IQ)/ (SIZE_OF_ANT_ARRAY * NUM_OF_AXIS))
     reshaped_mag_array = np.zeros((NUM_OF_AXIS, SIZE_OF_ANT_ARRAY, num_of_iq_per_ant_per_axis), float64)
@@ -154,6 +172,17 @@ def mag_reshape(mag_array):
         i = i + 4
 
     return reshaped_mag_array
+
+def mag_reshape_12_ant_mode(mag_array):
+    num_of_iq_per_ant = int((mag_array.shape[0] - NUMBER_OF_REFERENCE_IQ) / 12)
+    reshaped_mag = np.zeros((12, num_of_iq_per_ant))
+
+    i = 0
+    while i < num_of_iq_per_ant:
+        reshaped_mag[:, i] = mag_array[i * 12 : (i + 1) * 12]
+        i += 1
+
+    return reshaped_mag
 
 from scipy.optimize import least_squares
 import matplotlib.pyplot as pyplot 
@@ -325,7 +354,8 @@ def calculate_angle_L_shaped_music(received_data, wave_length):
 
 
 def calculate_angle_music_spatial_smoothing(received_data, wave_length, signal_dimension = 1):
-    R = spatial_smoothing(received_data.T, SIZE_OF_SUBARRAY, direction = "forward-backward")
+    # R = spatial_smoothing(received_data.T, SIZE_OF_SUBARRAY, direction = "forward-backward")
+    R = spatial_smoothing_ess_ss(received_data, SIZE_OF_SUBARRAY)
 
     write_protocol_data(CMD_INFO, f"The correlation matrix {R}")
 
@@ -343,6 +373,8 @@ def calculate_angle_music_spatial_smoothing(received_data, wave_length, signal_d
     
     normal_power = np.divide(np.abs(power_distribution), np.max(np.abs(power_distribution)))
     # DOA_plot(power_distribution, incident_angle, log_scale_min=None, alias_highlight=True, d=0.5, axes=None)
+    # plt.show()
+    # plt.plot(np.deg2rad(90 - incident_angle), power_distribution, 'g-')
     # plt.show()
     from scipy.signal import argrelextrema
     # index_normal_largest_power = np.argpartition(normal_power, -1 * 10)[-1 * 10 :]
@@ -413,17 +445,39 @@ def calculate_angle_root_music(received_data, wave_length, axis):
     esprit_file.close()
     
 def calculate_angle_pdda(received_data, wave_length):
-    h = received_data[:1, :]
-    H = received_data[1:, :]
+    h = np.matrix(received_data[:1, :])
+    H = np.matrix(received_data[1:, :])
 
     p = (h @ H.conj().T) / (h @ h.conj().T)
 
-    e = np.insert(p.flatten(), 0, 1)
+    e = np.matrix(np.insert(p.flatten(), 0, 1)).T
+
+    
 
     angles_space = np.linspace(0, np.pi, 180)
+    ant_alignment = np.array([i * d for i in range(SIZE_OF_ANT_ARRAY)])
+    scanning_vectors = np.zeros((SIZE_OF_ANT_ARRAY, len(angles_space)), dtype = complex)
+    power_spec = np.zeros(len(angles_space), dtype = complex)
+    # scanning_vectors[:, i]
+    for i, angle in enumerate(angles_space):
+        scanning_vector = np.matrix(np.exp(ant_alignment * 1j * 2 * pi  * cos(angle) / wave_length))
+        # power_spec[i] = np.abs(scanning_vector.conj() @ e @ e.conj().T @ scanning_vector.T) 
+        power_spec[i] = np.abs(scanning_vector.conj() @ e) **2
 
-    for angle in angles_space:
-        
+
+    # plt.plot(pi - angles_space, power_spec, 'r-')
+    # plt.show()
+    index_max = np.argmax(np.abs(power_spec))
+    return pi - angles_space[index_max]
+
+k0 = 2 * pi / 0.12
+def steering_2d(angle_x, angle_y):
+    steering = np.zeros((12, 1), dtype = complex)
+    for i, ant in enumerate(switch_pattern):
+        steering[i] = np.exp(1j * k0 * (antenna_pos[ant][0] * cos(angle_x) + antenna_pos[ant][1] * cos(angle_y)))
+
+    return steering
+
 
 
 def calculate_distance(rssi):

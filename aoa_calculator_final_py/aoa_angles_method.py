@@ -451,7 +451,8 @@ def location_aoa_calculator_cumul_phase_diff_single_locator_music(new_angles_to_
                     if not continue_to_process : break
                     # if MUSIC_WITH_SPATIAL_SMOOTHING:
                     # calculated_angle = calculate_angle_music_spatial_smoothing(received_data, wave_length)
-                    calculated_angle_music_per_axis = calculate_angle_music_spatial_smoothing(received_data, 0.12)
+                    # calculated_angle_music_per_axis = calculate_angle_music_spatial_smoothing(received_data, 0.12)
+                    calculated_angle_music_per_axis = calculate_angle_pdda(received_data_2, 0.12)
                     calculated_angle_music_with_mag_per_axis = calculate_angle_music_spatial_smoothing(received_data_2, 0.12)
                     # calculated_angle_music_per_axis = calculate_angle_music(received_data, 0.12)
                     # calculated_angle_music_with_mag_per_axis = calculate_angle_music(received_data_2, 0.12)

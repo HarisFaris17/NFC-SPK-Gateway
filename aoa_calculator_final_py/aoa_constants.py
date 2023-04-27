@@ -69,6 +69,8 @@ MUSIC_CUMUL_DIFF_PHASE_FILE = r"/../Test AoA/MUSIC_CUMUL_DIFF_PHASE_FILE.csv"
 MUSIC_2_CUMUL_DIFF_PHASE_FILE = r"/../Test AoA/MUSIC_2_CUMUL_DIFF_PHASE_FILE.csv"
 ESPRIT_CUMUL_DIFF_PHASE_FILE = r"/../Test AoA/ESPRIT_DIFF_PHASE_FILE.csv"
 
+MUSIC_2D_FILE = r"/../Test AoA/MUSIC_2D_FILE.csv"
+
 LOG_FILE = r"/../Test AoA/aoa_calculator.log"
 
 DISTANCE_ESTIMATOR_FILE = r"/../distance_estimator/distance_estimator.joblib"
@@ -152,6 +154,10 @@ reference_sampling_antenna = ANT_5
 switch_pattern_x = [ANT_12, ANT_1, ANT_2]
 switch_pattern_y = [ANT_10, ANT_9, ANT_8]
 
+switch_pattern = [ANT_11, ANT_12, ANT_1, ANT_2, ANT_3, ANT_4, ANT_5, ANT_6, ANT_7, ANT_8, ANT_9, ANT_10]
+
+MODE_12_ANT = True
+
 SIZE_OF_ANT_ARRAY = 4
 SIZE_OF_SUBARRAY = SIZE_OF_ANT_ARRAY - 2
 
@@ -192,7 +198,7 @@ MIN_STD_SPLIT_MULTIPATH = 0.4
 
 MAX_ESPRIT_TO_MEAN = 0.3
 
-MAX_IQS_BUNDLE = 60
+MAX_IQS_BUNDLE = 10
 
 
 

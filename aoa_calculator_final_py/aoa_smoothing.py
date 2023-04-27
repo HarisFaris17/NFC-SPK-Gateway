@@ -115,7 +115,9 @@ def spatial_smoothing_ess_ss(received_data, size_of_subarray):
     R = np.zeros((L, L), dtype = complex)
     for i in range(M):
         for j in range(M):
-            R += (G[i, j, :, :] @ G[j, i, :, :] + G_bar[i, j, :, :] @ G_bar[j, i, :, :]) + (G[i, i, :, :] @ G[j, j, :, :] + G_bar[i, i, :, :] @ G_bar[j, j, :, :] )
+            # R += (G[i, j, :, :] @ G[j, i, :, :] + G_bar[i, j, :, :] @ G_bar[j, i, :, :]) + (G[i, i, :, :] @ G[j, j, :, :] + G_bar[i, i, :, :] @ G_bar[j, j, :, :] )
+            R += (G[i, j, :, :] @ G[j, i, :, :]) + (G[i, i, :, :] @ G[j, j, :, :])
+
 
     R /= 2 * M
     return R
